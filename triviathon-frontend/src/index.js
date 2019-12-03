@@ -17,6 +17,8 @@ function main() {
       loginUser(user)
       
     })
+
+    getQuestions()
   
 
   })
@@ -67,8 +69,27 @@ function listUser(user) {
   userList.appendChild(userItem)
 }
 
-function renderQuestion(question) {
-  const 
+function renderQuestion(questionObj) {
+  const inner = document.querySelector('.carousel-inner')
+  const slide = document.createElement('div')
+  slide.className = 'carousel-item'
+
+  const question_content = document.createElement('h3')
+  question_content.innerHTML = questionObj.question
+
+  slide.appendChild(question_content)
+  inner.appendChild(slide)
+
+}
+
+function addQuestions(allQuestions) {
+  allQuestions.results.forEach(questionObj => renderQuestion(questionObj))
+}
+
+function getQuestions() {
+  fetch(QUEST_URL)
+  .then(resp => resp.json())
+  .then(allQuestions => addQuestions(allQuestions))
 }
 
 
