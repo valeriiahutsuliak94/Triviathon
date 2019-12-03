@@ -13,9 +13,12 @@ header {
 div.card {
     padding: 10px;
     margin-left: 5%;
+    height: 500px;
+    align-items: center;
 }
 
 div#questions-carousel {
     text-align: center;
     background-color: lightgray;
 }
+
