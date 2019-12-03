@@ -1,11 +1,13 @@
 const USERS_URL = "http://localhost:3000/users"
 const form = document.getElementsByClassName('card')
+const butt = document.querySelector('')
 
 document.addEventListener('DOMContentLoaded', function(){   
 
    
 
     form.addEventListener('submit', (e) => {
+        
         const postObj = {
             method: 'POST',
             headers: {
@@ -14,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function(){
             },
             body: JSON.stringify({
               'username': `${event.target.name.value}`,
-              'score' : 0
+              
               
             })
         }
