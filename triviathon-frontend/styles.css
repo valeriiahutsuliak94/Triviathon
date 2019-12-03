@@ -10,15 +10,17 @@ header {
     
 }
 
-div.card {
+.card {
     padding: 10px;
     margin-left: 5%;
     height: 500px;
     align-items: center;
 }
 
-div#questions-carousel {
+#questions-carousel {
     text-align: center;
     background-color: lightgray;
 }
+
+
 
