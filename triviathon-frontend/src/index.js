@@ -9,6 +9,7 @@ function main() {
       e.preventDefault()
       
       let user = grabUserData(e)
+      e.target.reset()
 
       loginUser(user)
       
@@ -35,33 +36,37 @@ function loginUser(user) {
 
   fetch(USERS_URL, configObj)
   .then(resp => resp.json())
-  .then(user => console.log(user))
+  .then(user => renderUserInfo(user))
   // fetch POST to user url
   // render user info to right sidebar
 }
 
 function grabUserData(e) {
-  e.target.reset()
   return {username: e.target.children[1].value} 
 }
 
-function getUserData(){
-  const currentUser = {
+function renderUserInfo(user) {
+  const infosec = document.querySelector('.user-info')
+  infosec.innerHTML = `<span data-id= ${user.id}><p>Name: ${user.username}</p><p>Score: ${user.score}</p>`
+}
 
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({
+// function getUserData(){
+//   const currentUser = {
+
+//       method: 'GET',
+//       headers: {
+//         'Content-Type': 'application/json',
+//         'Accept': 'application/json'
+//       },
+//       body: JSON.stringify({
           
       
       
-      })
+//       })
 
-  }
+//   }
 
-}
+// }
 
 function findUser(){
   fetch(USERS_URL, postObj)
