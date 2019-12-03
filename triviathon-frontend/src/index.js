@@ -45,30 +45,34 @@ function grabUserData(e) {
   return {username: e.target.children[1].value} 
 }
 
-function getUserData(){
-  const currentUser = {
 
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({
+
+
+
+// function getUserData(){
+//   const currentUser = {
+
+//       method: 'GET',
+//       headers: {
+//         'Content-Type': 'application/json',
+//         'Accept': 'application/json'
+//       },
+//       body: JSON.stringify({
           
       
       
-      })
+//       })
 
-  }
+//   }
 
-}
+// }
 
-function findUser(){
-  fetch(USERS_URL, postObj)
-  .then(resp => resp.json())
-  .then(users => addUsers(user))
-  }
-  form.reset()
+// function findUser(){
+//   fetch(USERS_URL, postObj)
+//   .then(resp => resp.json())
+//   .then(users => addUsers(user))
+//   }
+//   form.reset()
 
 
 
