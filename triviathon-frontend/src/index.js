@@ -19,13 +19,18 @@ function main() {
 }
 
 function loginUser(user) {
+  
+  const name = user.username
+  // debugger
   const configObj = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
         'Accept': 'application/json'
     },
-    body: JSON.stringify(user)
+    body: JSON.stringify({
+      username: name
+    })
   }
 
   fetch(USERS_URL, configObj)
@@ -36,6 +41,7 @@ function loginUser(user) {
 }
 
 function grabUserData(e) {
+  e.target.reset()
   return {username: e.target.children[1].value} 
 }
 
