@@ -5,7 +5,12 @@ class UsersController < ApplicationController
   end
 
   def show
-    user = User.find_or_create_by()
+    user = User.find_by(params[:id])
+    render json: user
+  end
+
+  def create
+    user = User.create(params[:username])
     render json: user
   end
 
