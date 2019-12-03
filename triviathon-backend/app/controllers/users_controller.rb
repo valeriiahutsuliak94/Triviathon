@@ -9,4 +9,10 @@ class UsersController < ApplicationController
     render json: user
   end
 
+  def create 
+    # Find user in db or create new
+    # set user variable = to this
+    # render json for this user
+  end
+
 end

@@ -3,9 +3,22 @@ body {
 }
 
 header {
+    padding: 30px;
     text-align: center;
     font-family: fantasy;
     color: teal;
     
+}
+
+div.card {
+    padding: 10px;
+    margin-left: 5%;
+    height: 500px;
+    align-items: center;
+}
+
+div#questions-carousel {
+    text-align: center;
+    background-color: lightgray;
 }
 
