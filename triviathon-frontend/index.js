@@ -1,4 +1,4 @@
-const USERS_URL = "http://localhost:3000/users"
+const usersURL = "http://localhost:3000/users"
 const form = document.getElementsByClassName('card')
 const butt = document.querySelector('')
 
