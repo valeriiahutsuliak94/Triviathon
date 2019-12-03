@@ -7,7 +7,7 @@ function main() {
   document.addEventListener('DOMContentLoaded', function(){ 
     // render all users & scores in left sidebar
     getAllUsers()
-    
+
     form.addEventListener('submit', (e) => {
       e.preventDefault()
       
@@ -65,6 +65,10 @@ function listUser(user) {
   const userItem = document.createElement('li')
   userItem.innerText = `${user.username}   ${user.score}`
   userList.appendChild(userItem)
+}
+
+function renderQuestion(question) {
+  const 
 }
 
 
