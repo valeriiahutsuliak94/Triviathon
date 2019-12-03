@@ -1,54 +1,73 @@
 const USERS_URL = "http://localhost:3000/users"
-const form = document.getElementsByClassName('card')
-const butt = document.querySelector('')
+const form = document.getElementById('login-form')
+// const butt = document.querySelector('')
 
-document.addEventListener('DOMContentLoaded', function(){   
-
-   
-
+function main() {
+  document.addEventListener('DOMContentLoaded', function(){ 
+    // loginUser()  
     form.addEventListener('submit', (e) => {
-        
-        const postObj = {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-              'username': `${event.target.name.value}`,
-              
-              
-            })
-        }
+      e.preventDefault()
+      
+      let user = grabUserData(e)
 
-        function findUser(){
-        fetch(USERS_URL, postObj)
-        .then(resp => resp.json())
-        .then(users => addUsers(user))
-        }
-        form.reset()
-    
+      loginUser(user)
+      
     })
-    function getUserData(){
-        const currentUser = {
+  
 
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                
-            
-            
-            })
+  })
+}
 
-        }
+function loginUser(user) {
+  const configObj = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    },
+    body: JSON.stringify(user)
+  }
 
-    }
-    
-    
-})
+  fetch(USERS_URL, configObj)
+  .then(resp => resp.json())
+  .then(user => console.log(user))
+  // fetch POST to user url
+  // render user info to right sidebar
+}
+
+function grabUserData(e) {
+  return {username: e.target.children[1].value} 
+}
+
+function getUserData(){
+  const currentUser = {
+
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+          
+      
+      
+      })
+
+  }
+
+}
+
+function findUser(){
+  fetch(USERS_URL, postObj)
+  .then(resp => resp.json())
+  .then(users => addUsers(user))
+  }
+  form.reset()
+
+
+
+
+main()
 
         
 
