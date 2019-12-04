@@ -106,8 +106,7 @@ function renderQuestion(questionObj) {
   
   inner.addEventListener('click',() => handelSelection(questionObj))
   console.log(questionObj)
-  // let resultMessage = document.getElementById('result-message')
-  // resultMessage.innerHTML = " "
+  
 
         
       
