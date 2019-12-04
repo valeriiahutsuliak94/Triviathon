@@ -90,10 +90,10 @@ function renderQuestion(questionObj) {
   slide.insertAdjacentHTML('beforeend',
     `<div id="answer-form">
     <br>
-    <input type="radio" name="answer" value=${answerChoices[0]}> <label>${answerChoices[0]}</label><br>
-    <input type="radio" name="answer" value=${answerChoices[1]}> <label>${answerChoices[1]}</label><br>
-    <input type="radio" name="answer" value=${answerChoices[2]}> <label>${answerChoices[2]}</label><br>
-    <input type="radio" name="answer" value=${answerChoices[3]}> <label>${answerChoices[3]}</label><br>
+    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[0]}> <label>${answerChoices[0]}</label><br>
+    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[1]}> <label>${answerChoices[1]}</label><br>
+    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[2]}> <label>${answerChoices[2]}</label><br>
+    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[3]}> <label>${answerChoices[3]}</label><br>
     </div>`
   )
   slide.appendChild(status)
@@ -106,8 +106,12 @@ function renderQuestion(questionObj) {
   function handelSelection(questionObj){
     const score = document.querySelector('#round-score')
     const clickEl = event.target
+    const inputs = slide.getElementsByClassName('answer-btn')
     if(clickEl.tagName === 'INPUT'){
       const userChoice = clickEl.nextElementSibling.innerText
+      for(let input of inputs) {
+        input.disabled = true
+      }
       if(userChoice === questionObj.correct_answer){
        status.innerHTML = '<br><h4 class= "correct">CORRECT!</h4>'
        score.innerText = parseInt(score.innerText) +1
@@ -179,6 +183,8 @@ function finishMessage() {
       .then(user => renderUserInfo(user))
     }
   })
+
+
 
 }
 
