@@ -70,70 +70,30 @@ function listUser(user) {
 }
 
 
-let questions = []
-fetch(
-  "https://opentdb.com/api.php?amount=10&category=9&difficulty=easy&type=multiple"
-)
-  .then(res => {
-    return res.json();
-  })
-  .then(loadedQuestions => {
-    console.log(loadedQuestions.results);
-    questions = loadedQuestions.results.map(loadedQuestion => {
-      const formattedQuestion = {
-        question: loadedQuestion.question
-      }
-
-      const answerChoices = [...loadedQuestion.incorrect_answers];
-        formattedQuestion.answerIndex = Math.floor(Math.random() * 3);
-        console.log(formattedQuestion)
-      
-        answerChoices.splice(
-        formattedQuestion.answerIndex,
-        0,
-        loadedQuestion.correct_answer
-      )
-      formattedQuestion.answerChoices = answerChoices
 
       
 
-      return formattedQuestion
-    })
-    let questionIndex = 0
-
-    function renderQuestion(questionIndex){
-      console.log(questionIndex)
-      const question = document.getElementById('question')
-      const answerList = document.getElementById('answer-choices')
-      answerList.innerHTML = " "
-      let resultMessage = document.getElementById('result-message')
-      resultMessage.innerHTML = " "
-      question.innerHTML = questions[questionIndex].question
-      questions[questionIndex].answerChoices.forEach((choice, index) => {
-        const li = document.createElement('li')
-        li.innerHTML = choice
-        answerList.append(li)
 
         
-        li.addEventListener('click',() => handelSelection(index))
+//         li.addEventListener('click',() => handelSelection(index))
       
-      })
-        function handelSelection(index){
-          if(index === questions[questionIndex].answerIndex){
-            resultMessage.innerHTML = 'Correct'
-          }else{
-            resultMessage.innerHTML = 'Wrong'
-          }
-          questionIndex++
-          setTimeout(() => renderQuestion(questionIndex), 1000)
+//       })
+//         function handelSelection(index){
+//           if(index === questions[questionIndex].answerIndex){
+//             resultMessage.innerHTML = 'Correct'
+//           }else{
+//             resultMessage.innerHTML = 'Wrong'
+//           }
+//           questionIndex++
+//           setTimeout(() => renderQuestion(questionIndex), 1000)
           
-          // renderQuestion(questionIndex)
-        }
+//           // renderQuestion(questionIndex)
+//         }
       
-    }
-     renderQuestion(questionIndex)
+//     }
+//      renderQuestion(questionIndex)
   
-  })
+  // })
  
 
 
@@ -142,8 +102,19 @@ function renderQuestion(questionObj) {
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
 
+  const answerChoices = [...questionObj.incorrect_answers];
+  questionObj.answerIndex = Math.floor(Math.random() * 3);
+        
+      
+  answerChoices.splice(
+        questionObj.answerIndex,
+        0,
+        questionObj.correct_answer
+      )
   const question_content = document.createElement('h3')
   question_content.innerHTML = questionObj.question
+
+  
 
   slide.appendChild(question_content)
   inner.appendChild(slide)
