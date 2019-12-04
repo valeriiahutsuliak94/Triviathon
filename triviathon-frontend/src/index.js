@@ -70,9 +70,7 @@ function listUser(user) {
 
 
 let questions = []
-fetch(
-  "https://opentdb.com/api.php?amount=10&category=9&difficulty=easy&type=multiple"
-)
+fetch(QUEST_URL)
   .then(res => {
     return res.json();
   })
