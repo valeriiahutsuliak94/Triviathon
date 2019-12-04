@@ -70,6 +70,7 @@ function renderQuestion(questionObj) {
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
+  
 
   const answerChoices = [...questionObj.incorrect_answers];
   questionObj.answerIndex = Math.floor(Math.random() * 3);
@@ -120,6 +121,7 @@ function renderQuestion(questionObj) {
 
 function addQuestions(allQuestions) {
   allQuestions.results.forEach(questionObj => renderQuestion(questionObj))
+  
 }
 
 function getQuestions() {
@@ -140,7 +142,7 @@ function welcomeMessage() {
 
 function startMessage() {
   let startMsg = document.getElementById('mid-header')
-  startMsg.innerText = `You have 30 seconds to answer each question
+  startMsg.innerText = `You have 10 seconds to answer each question
 
                         GET READY...GET SET...`
 }
