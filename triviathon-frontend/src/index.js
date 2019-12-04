@@ -1,12 +1,6 @@
 const USERS_URL = "http://localhost:3000/users"
 const QUEST_URL = "https://opentdb.com/api.php?amount=5&type=multiple"
 const form = document.getElementById('login-form')
-<<<<<<< HEAD
-const inner = document.querySelector('#question-slides')
-
-// const butt = document.querySelector('')
-=======
->>>>>>> navganj
 
 // main function
 function main() {
