@@ -109,17 +109,15 @@ function renderQuestion(questionObj) {
   
   slide.addEventListener('click',() => handelSelection(questionObj))
   
-  // let resultMessage = document.getElementById('result-message')
-  // resultMessage.innerHTML = " "
-
-        
       
   function handelSelection(questionObj){
+    const score = document.querySelector('#round-score')
     const clickEl = event.target
     if(clickEl.tagName === 'INPUT'){
       const userChoice = clickEl.nextElementSibling.innerText
       if(userChoice === questionObj.correct_answer){
        result.innerHTML = '<br><h4 class= "correct">CORRECT!</h4>'
+       score.innerText = parseInt(score.innerText) +1
           }else{
         result.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
 
