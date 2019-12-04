@@ -159,7 +159,7 @@ function finishMessage() {
   slide.addEventListener('click', () => {
     const score = document.querySelector('#round-score')
     const currentScore = document.getElementById('current-score')
-    const newScore = parseInt(score.innerText) + parseInt(currentScore)
+    const newScore = parseInt(score.innerText) + parseInt(currentScore.innerText)
     const span = document.querySelector('span')
     const userId = span.dataset.id
 
