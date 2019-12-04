@@ -1,5 +1,5 @@
 const USERS_URL = "http://localhost:3000/users"
-const QUEST_URL = "https://opentdb.com/api.php?amount=5&type=multiple"
+const QUEST_URL = "https://opentdb.com/api.php?amount=3&type=multiple"
 const form = document.getElementById('login-form')
 
 // main function
@@ -45,7 +45,7 @@ function grabUserData(e) {
 
 function renderUserInfo(user) {
     const infosec = document.querySelector('.user-info')
-    infosec.innerHTML = `<span data-id= ${user.id}><p>Name: ${user.username}</p><p>Score: ${user.score}</p>`
+    infosec.innerHTML = `<span data-id= ${user.id}><p>Name: ${user.username}</p><p id="current-score">${user.score}</p>`
   }
 
 // user ranking functions
@@ -120,7 +120,9 @@ function renderQuestion(questionObj) {
 
 function addQuestions(allQuestions) {
   allQuestions.results.forEach(questionObj => renderQuestion(questionObj))
+  finishMessage()
 }
+  
 
 function getQuestions() {
   fetch(QUEST_URL)
@@ -141,14 +143,46 @@ function welcomeMessage() {
 function startMessage() {
   let startMsg = document.getElementById('mid-header')
   startMsg.innerText = `You have 30 seconds to answer each question
-
                         GET READY...GET SET...`
 }
 
 
 
+function finishMessage() {
+  const inner = document.querySelector('#question-slides')
+  const slide = document.createElement('div')
+  slide.className = 'carousel-item'
+  slide.innerHTML = `<h3>Congratulations!!!</h3> <br> <button id= "submit-score"> Submit </button>`
+  const submitScoreBtn = document.querySelector('#submit-score')
+  inner.appendChild(slide)
+
+  slide.addEventListener('click', () => {
+    const score = document.querySelector('#round-score')
+    const currentScore = document.getElementById('current-score')
+    const newScore = parseInt(score.innerText) + parseInt(currentScore)
+    const span = document.querySelector('span')
+    const userId = span.dataset.id
+
+    reqObj = {
+      method: 'PATCH',
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({score: newScore})
+    }
+
+    if (event.target.id === 'submit-score') {
+      fetch(`${USERS_URL}/${userId}`, reqObj)
+      .then(resp => resp.json())
+      .then(user => renderUserInfo(user))
+    }
+  })
+
+}
+
+
 main()
-        
 
 
 
