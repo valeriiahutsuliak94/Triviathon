@@ -64,6 +64,7 @@ function listUser(user) {
   const userItem = document.createElement('li')
   userItem.innerText = `${user.username}   ${user.score}`
   userList.appendChild(userItem)
+  console.log(user.score)
 }
 
 function renderQuestion(questionObj) {
