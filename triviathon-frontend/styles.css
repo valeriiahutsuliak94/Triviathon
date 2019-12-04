@@ -25,10 +25,23 @@ header {
 
 .carousel-inner {
     width: 100%;
-    height: 500px;
+    height: 460px;
+    padding: 20px
 }
 .carousel-item {
     width: 100%;
     text-align: center
+}
+
+.carousel-footer {
+    padding: 20px
+}
+
+.correct {
+    color: darkgreen
+}
+
+.wrong {
+    color: crimson
 }
 
