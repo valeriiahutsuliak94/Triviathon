@@ -1,5 +1,5 @@
 const USERS_URL = "http://localhost:3000/users"
-const QUEST_URL = "https://opentdb.com/api.php?amount=26"
+const QUEST_URL = "https://opentdb.com/api.php?amount=5&type=multiple"
 const form = document.getElementById('login-form')
 // const butt = document.querySelector('')
 
@@ -98,7 +98,7 @@ function listUser(user) {
 
 
 function renderQuestion(questionObj) {
-  const inner = document.querySelector('.carousel-inner')
+  const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
 
@@ -113,10 +113,20 @@ function renderQuestion(questionObj) {
       )
   const question_content = document.createElement('h3')
   question_content.innerHTML = questionObj.question
+  
 
   
 
   slide.appendChild(question_content)
+  slide.insertAdjacentHTML('beforeend',
+    `<div id="answer-form">
+    <br>
+    <input type="radio" name="answer" value=${answerChoices[0]}> ${answerChoices[0]}<br>
+    <input type="radio" name="answer" value=${answerChoices[1]}> ${answerChoices[1]}<br>
+    <input type="radio" name="answer" value=${answerChoices[2]}> ${answerChoices[2]}<br>
+    <input type="radio" name="answer" value=${answerChoices[3]}> ${answerChoices[3]}<br>
+    </div>`
+  )
   inner.appendChild(slide)
 
 }
@@ -133,7 +143,6 @@ function getQuestions() {
 
 
 main()
-
         
 
 
