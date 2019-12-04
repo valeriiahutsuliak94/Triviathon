@@ -1,7 +1,6 @@
 const USERS_URL = "http://localhost:3000/users"
 const QUEST_URL = "https://opentdb.com/api.php?amount=26"
 const form = document.getElementById('login-form')
-const question = document.getElementById("questions-carousel")
 // const butt = document.querySelector('')
 
 function main() {
@@ -32,7 +31,7 @@ function main() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-         'Accept': 'application/json'
+          'Accept': 'application/json'
       },
       body: JSON.stringify({
         username: name
