@@ -1,12 +1,6 @@
 const USERS_URL = "http://localhost:3000/users"
 const QUEST_URL = "https://opentdb.com/api.php?amount=5&type=multiple"
 const form = document.getElementById('login-form')
-<<<<<<< HEAD
-const inner = document.querySelector('#question-slides')
-
-// const butt = document.querySelector('')
-=======
->>>>>>> navganj
 
 // main function
 function main() {
@@ -72,28 +66,7 @@ function listUser(user) {
   userList.appendChild(userItem)
 }
 
-//         li.addEventListener('click',() => handelSelection(index))
-      
-//       })
-//         function handelSelection(index){
-//           if(index === questions[questionIndex].answerIndex){
-//             resultMessage.innerHTML = 'Correct'
-//           }else{
-//             resultMessage.innerHTML = 'Wrong'
-//           }
-//           questionIndex++
-//           setTimeout(() => renderQuestion(questionIndex), 1000)
-          
-//           // renderQuestion(questionIndex)
-//         }
-      
-//     }
-//      renderQuestion(questionIndex)
-  
-  // })
- 
 
-// render q&a functions
 function renderQuestion(questionObj) {
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
@@ -127,10 +100,8 @@ function renderQuestion(questionObj) {
   
   slide.addEventListener('click',() => handelSelection(questionObj))
   
-  // let resultMessage = document.getElementById('result-message')
-  // resultMessage.innerHTML = " "
-
-        
+ 
+      
       
   function handelSelection(questionObj){
     const clickEl = event.target
