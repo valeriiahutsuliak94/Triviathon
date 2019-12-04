@@ -1,5 +1,5 @@
 const USERS_URL = "http://localhost:3000/users"
-const QUEST_URL = "https://opentdb.com/api.php?amount=26"
+const QUEST_URL = "https://opentdb.com/api.php?amount=5&type=multiple"
 const form = document.getElementById('login-form')
 // const butt = document.querySelector('')
 
@@ -70,7 +70,7 @@ function listUser(user) {
 }
 
 function renderQuestion(questionObj) {
-  const inner = document.querySelector('.carousel-inner')
+  const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
 
