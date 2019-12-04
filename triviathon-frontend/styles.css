@@ -37,3 +37,11 @@ header {
     padding: 20px
 }
 
+.correct {
+    color: darkgreen
+}
+
+.wrong {
+    color: crimson
+}
+
