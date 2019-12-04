@@ -8,7 +8,7 @@ function main() {
   document.addEventListener('DOMContentLoaded', function(){ 
     // render all users & scores in left sidebar
     getAllUsers()
-
+    
     form.addEventListener('submit', (e) => {
       e.preventDefault()
       
@@ -68,12 +68,6 @@ function listUser(user) {
   userList.appendChild(userItem)
 }
 
-function renderQuestion(question) {
-  const 
-}
-
-
-
 
 let questions = []
 fetch(
@@ -107,6 +101,7 @@ fetch(
     let questionIndex = 0
 
     function renderQuestion(questionIndex){
+      console.log(questionIndex)
       const question = document.getElementById('question')
       const answerList = document.getElementById('answer-choices')
       answerList.innerHTML = " "
@@ -138,6 +133,7 @@ fetch(
      renderQuestion(questionIndex)
   
   })
+ 
 
 
 
