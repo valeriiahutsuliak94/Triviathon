@@ -66,7 +66,6 @@ function listUser(user) {
   userList.appendChild(userItem)
 }
 
-
 function renderQuestion(questionObj) {
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
@@ -83,6 +82,8 @@ function renderQuestion(questionObj) {
     
   const question_content = document.createElement('h3')
   question_content.innerHTML = questionObj.question
+
+  const status = document.createElement('div')
   
   slide.appendChild(question_content)
   slide.insertAdjacentHTML('beforeend',
@@ -94,32 +95,27 @@ function renderQuestion(questionObj) {
     <input type="radio" name="answer" value=${answerChoices[3]}> <label>${answerChoices[3]}</label><br>
     </div>`
   )
-  slide.appendChild(result)
+  slide.appendChild(status)
   inner.appendChild(slide)
 
   
   slide.addEventListener('click',() => handelSelection(questionObj))
   
- 
-      
       
   function handelSelection(questionObj){
+    const score = document.querySelector('#round-score')
     const clickEl = event.target
     if(clickEl.tagName === 'INPUT'){
       const userChoice = clickEl.nextElementSibling.innerText
       if(userChoice === questionObj.correct_answer){
-       result.innerHTML = '<br><h4 class= "correct">CORRECT!</h4>'
+       status.innerHTML = '<br><h4 class= "correct">CORRECT!</h4>'
+       score.innerText = parseInt(score.innerText) +1
           }else{
-        result.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
+        status.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
 
       }
-  
     }
-  
-
   }
-
-
 }
 
 function addQuestions(allQuestions) {
@@ -130,6 +126,7 @@ function getQuestions() {
   fetch(QUEST_URL)
   .then(resp => resp.json())
   .then(allQuestions => addQuestions(allQuestions))
+  .catch(err => console.log(err.message))
 }
 
 // message functions
