@@ -113,10 +113,20 @@ function renderQuestion(questionObj) {
       )
   const question_content = document.createElement('h3')
   question_content.innerHTML = questionObj.question
+  
 
   
 
   slide.appendChild(question_content)
+  slide.insertAdjacentHTML('beforeend',
+    `<div id="answer-form">
+    <br>
+    <input type="radio" name="answer" value=${answerChoices[0]}> ${answerChoices[0]}<br>
+    <input type="radio" name="answer" value=${answerChoices[1]}> ${answerChoices[1]}<br>
+    <input type="radio" name="answer" value=${answerChoices[2]}> ${answerChoices[2]}<br>
+    <input type="radio" name="answer" value=${answerChoices[3]}> ${answerChoices[3]}<br>
+    </div>`
+  )
   inner.appendChild(slide)
 
 }
