@@ -145,14 +145,12 @@ function startMessage() {
                         GET READY...GET SET...`
 }
 
-
-
 function finishMessage() {
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
-  slide.innerHTML = `<h3>Congratulations!!!</h3> <br> <button id= "submit-score"> Submit </button>`
-  const submitScoreBtn = document.querySelector('#submit-score')
+  slide.innerHTML = `<h3>Congratulations! You have reached the finish line!</h3><br>
+                    <button id= "submit-score"> Submit </button>`
   inner.appendChild(slide)
 
   slide.addEventListener('click', () => {
