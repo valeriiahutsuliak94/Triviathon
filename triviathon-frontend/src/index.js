@@ -38,6 +38,7 @@ function loginUser(user) {
     .then(user =>  {renderUserInfo(user)
                   renderCorrectAnswers(user)
     })
+    hideForm()
     clearWelcome()
     startGame()
 }
@@ -77,6 +78,11 @@ function listUser(user) {
   userList.appendChild(userItem)
  
   
+}
+
+function hideForm() {
+  const loginForm = document.querySelector('#login-form')
+  loginForm.style.visibility = "hidden"
 }
 
 function renderQuestion(questionObj) {
@@ -228,7 +234,7 @@ function finishMessage() {
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
-  slide.innerHTML = `<h3>Congratulations!!!</h3> <br> <button id= "submit-score"> Submit </button>`
+  slide.innerHTML = `<h3>Congratulations!!!</h3> <br> <button id= "submit-score"> Submit Your Score </button>`
   inner.appendChild(slide)
 
   slide.addEventListener('click', () => {
