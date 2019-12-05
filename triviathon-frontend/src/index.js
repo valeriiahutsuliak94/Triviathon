@@ -1,6 +1,5 @@
 const USERS_URL = "http://localhost:3000/users"
 const ANSWERS_URL = "http://localhost:3000/answers"
-// const QUEST_URL = `https://opentdb.com/api.php?amount=10&category=${categoryID}&type=multiple`
 const form = document.getElementById('login-form')
 
 // main function
