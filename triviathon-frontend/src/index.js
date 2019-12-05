@@ -1,6 +1,6 @@
 const USERS_URL = "http://localhost:3000/users"
 const ANSWERS_URL = "http://localhost:3000/answers"
-
+// const QUEST_URL = `https://opentdb.com/api.php?amount=10&category=${categoryID}&type=multiple`
 const form = document.getElementById('login-form')
 
 // main function
@@ -35,13 +35,14 @@ function loginUser(user) {
 
     fetch(USERS_URL, configObj)
     .then(resp => resp.json())
-    .then(user =>  { renderUserInfo(user)
-                  renderCorrectAnswers(user)
-    })
+    .then(user => renderUserInfo(user))
 
-    startMessage()
-    getQuestions()
-  }
+    startGame()
+    // Move below to category click
+    // startMessage()
+    // getQuestions()
+    
+}
 
 function grabUserData(e) {
     return {username: e.target.children[1].value} 
@@ -49,10 +50,8 @@ function grabUserData(e) {
 
 function renderUserInfo(user) {
     const infosec = document.querySelector('.user-info')
-    infosec.innerHTML = `<span data-id= ${user.id}>
-                        <p>Name: ${user.username}</p>
-                        <p id="current-score">${user.score}</p>`
-  }
+    infosec.innerHTML = `<span data-id= ${user.id}><p>Name: ${user.username}</p><p id="current-score">${user.score}</p>`
+}
 
 // user ranking functions
 function getAllUsers() {
@@ -62,21 +61,29 @@ function getAllUsers() {
 }
 
 function renderUsers(users) {
-  users.forEach(user => listUser(user))
+  const userList = document.querySelector('ul')
+  userList.innerHTML = " "
+  users.sort(function(a,b){
+    return b.score - a.score
+  })
+  const topUsers = users.slice(0, 10) 
+  topUsers.forEach(user => listUser(user))
 }
 
 function listUser(user) {
   const userList = document.querySelector('ul')
   const userItem = document.createElement('li')
-  userItem.innerText = `${user.username}   ${user.score}`
+  userItem.innerText =`${user.username}   ${user.score}`
   userList.appendChild(userItem)
+ 
+  
 }
 
-// q&a functions
 function renderQuestion(questionObj) {
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
+  
   const answerChoices = [...questionObj.incorrect_answers];
   questionObj.answerIndex = Math.floor(Math.random() * 3);
       
@@ -99,30 +106,47 @@ function renderQuestion(questionObj) {
   slide.insertAdjacentHTML('beforeend',
     `<div id="answer-form">
     <br>
-    <input type="radio" name="answer" value=${answerChoices[0]}> <label>${answerChoices[0]}</label><br>
-    <input type="radio" name="answer" value=${answerChoices[1]}> <label>${answerChoices[1]}</label><br>
-    <input type="radio" name="answer" value=${answerChoices[2]}> <label>${answerChoices[2]}</label><br>
-    <input type="radio" name="answer" value=${answerChoices[3]}> <label>${answerChoices[3]}</label><br>
+    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[0]}> <label>${answerChoices[0]}</label><br>
+    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[1]}> <label>${answerChoices[1]}</label><br>
+    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[2]}> <label>${answerChoices[2]}</label><br>
+    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[3]}> <label>${answerChoices[3]}</label><br>
     </div>`
   )
   slide.appendChild(status)
   inner.appendChild(slide)
 
   
-  slide.addEventListener('click',() => handleSelection(questionObj))
+  slide.addEventListener('click',() => handelSelection(questionObj))
   
       
-  function handleSelection(questionObj){
+  function handelSelection(questionObj){
     const score = document.querySelector('#round-score')
     const clickEl = event.target
-    if (clickEl.tagName === 'INPUT') {
+    const inputs = slide.getElementsByClassName('answer-btn')
+    let pointValue
+    switch(questionObj.difficulty) {
+      case "easy":
+        pointValue = 1;
+        break;
+      case "medium":
+        pointValue = 3;
+        break;
+      case "hard":
+        pointValue = 5;
+    }
+    if(clickEl.tagName === 'INPUT'){
       const userChoice = clickEl.nextElementSibling.innerText
-      if (userChoice === questionObj.correct_answer) {
+      for(let input of inputs) {
+        input.disabled = true
+      }
+      if(userChoice === questionObj.correct_answer){
        status.innerHTML = '<br><h4 class= "correct">CORRECT!</h4>'
-       score.innerText = parseInt(score.innerText) + 1
-          } else {
+       score.innerText = parseInt(score.innerText) +pointValue
+       createAnswer(question= questionObj.question, correct= true)
+          }else{
         status.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
         createAnswer(question= questionObj.question, correct= false)
+
       }
     }
   }
@@ -141,29 +165,16 @@ function renderQuestion(questionObj) {
         correct: correct,
         user_id: userId
       })
+
     }
 
     fetch(ANSWERS_URL, configObj)
     .then(resp => resp.json())
-    .then(answer => console.log(answer))
+    .then(newAnswer => console.log(newAnswer))
     .catch(err => console.log(err.message))
   }
 
-}
 
-function renderCorrectAnswers(user) {
-  user.answers.forEach(answer => renderCorrectAnswer(answer))
-}
-
-function renderCorrectAnswer(answer) {
-  const answerDiv = document.getElementsByClassName('answer-div')
-  const answerHead = document.getElementById('answer-head')
-  answerHead.innerText = 'Previous Correct Answers'
-  const answerList = document.createElement('ul')
-  const singleAnswer = document.createElement('li')
-  singleAnswer.innerHTML = `${answer.question}`
-  answerList.appendChild(singleAnswer)
-  answerDiv.append(answerList)
 }
 
 function addQuestions(allQuestions) {
@@ -189,17 +200,16 @@ function welcomeMessage() {
 }
 
 function startMessage() {
-  let startMsg = document.getElementById('mid-header')
-  startMsg.innerText = `You have 30 seconds to answer each question
-                        GET READY...GET SET...`
+  let startMsg = document.getElementById('start-game')
+  startMsg.innerHTML = `<h3>You have 10 seconds to answer each question
+                        GET READY...GET SET...</h3>`
 }
 
 function finishMessage() {
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
-  slide.innerHTML = `<h3>Congratulations! You have reached the finish line!</h3><br>
-                    <button id= "submit-score"> Submit </button>`
+  slide.innerHTML = `<h3>Congratulations!!!</h3> <br> <button id= "submit-score"> Submit </button>`
   inner.appendChild(slide)
 
   slide.addEventListener('click', () => {
@@ -222,10 +232,8 @@ function finishMessage() {
       fetch(`${USERS_URL}/${userId}`, reqObj)
       .then(resp => resp.json())
       .then(user => renderUserInfo(user))
+      .then(getAllUsers())
     }
-
-
-   
   })
 }
 function startGame() {
@@ -269,12 +277,3 @@ function addCategoryListener() {
 
 
 main()
-
-
-
-
-   
-
-    
-
-
