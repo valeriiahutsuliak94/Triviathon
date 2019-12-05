@@ -149,12 +149,12 @@ function renderQuestion(questionObj) {
 }
 
 function renderCorrectAnswers(user) {
-  user.answers.forEach(answer => renderCorrectAnswer(user))
+  user.answers.forEach(answer => renderCorrectAnswer(answer))
 }
 
 function renderCorrectAnswer(answer) {
   const answerDiv = document.getElementsByClassName('answer-div')
-  const answerHead = document.findElementsById('answer-head')
+  const answerHead = document.getElementById('answer-head')
   answerHead.innerText = 'Previous Correct Answers'
   const answerList = document.createElement('ul')
   const singleAnswer = document.createElement('li')
