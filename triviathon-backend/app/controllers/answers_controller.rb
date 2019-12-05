@@ -11,7 +11,7 @@ class AnswersController < ApplicationController
     
     
     def create
-        answer = Answer.create(question: params[:question], user_id: params[:user_id], correct: params[:correct])
+        answer = Answer.create(question: params[:question], user_id: params[:user_id], correct: params[:correct], content: params[:content])
         render json: answer
     end
 

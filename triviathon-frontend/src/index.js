@@ -50,8 +50,8 @@ function renderUserInfo(user) {
     const infosec = document.querySelector('.user-info')
     infosec.innerHTML = `<span data-id= ${user.id}>
                         <p>Name: ${user.username}</p>
-                        <label>Total Score:<p id="current-score">${user.score}</p></label>
-                        <label>Total Answers:<p>${user.answers.length}</p></label>`
+                        <label>Total Score:<p id="current-score">${user.score}</p></label><br>
+                        <label>Total Attempts:<p>${user.answers.length}</p></label>`
   }
 
 // user ranking functions
@@ -118,7 +118,6 @@ function renderQuestion(questionObj) {
   
   slide.addEventListener('click',() => handelSelection(questionObj))
   
-      
   function handelSelection(questionObj){
     const score = document.querySelector('#round-score')
     const clickEl = event.target
@@ -141,17 +140,16 @@ function renderQuestion(questionObj) {
       }
       if(userChoice === questionObj.correct_answer){
        status.innerHTML = '<br><h4 class= "correct">CORRECT!</h4>'
-       score.innerText = parseInt(score.innerText) +pointValue
-       createAnswer(question= questionObj.question, correct= true)
+       score.innerText = parseInt(score.innerText) + pointValue
+       createAnswer(question= questionObj.question, correct= true, content= userChoice)
           }else{
         status.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
-        createAnswer(question= questionObj.question, correct= false)
-
+        createAnswer(question= questionObj.question, correct= false, content= userChoice)
       }
     }
   }
 
-  function createAnswer(question, correct) {
+  function createAnswer(question, correct, content) {
     const span = document.querySelector('span')
     const userId = span.dataset.id
     const configObj = {
@@ -163,11 +161,12 @@ function renderQuestion(questionObj) {
       body: JSON.stringify({
         question: question,
         correct: correct,
-        user_id: userId
+        user_id: userId,
+        content: content
       })
 
     }
-
+    
     fetch(ANSWERS_URL, configObj)
     .then(resp => resp.json())
     .then(answer => renderCorrectAnswer(answer))
@@ -176,17 +175,13 @@ function renderQuestion(questionObj) {
 
 }
 
-function renderCorrectAnswers(user) {
-  user.answers.forEach(answer => renderCorrectAnswer(answer))
-}
-
 function renderCorrectAnswer(answer) {
   const answerDiv = document.querySelector('.answer-div')
   const answerHead = document.getElementById('answer-head')
   answerHead.innerText = 'Previous Questions Answered'
   const answerList = document.createElement('ul')
   const singleAnswer = document.createElement('li')
-  singleAnswer.innerHTML = `${answer.question}`
+  singleAnswer.innerHTML = `${answer.question} ${answer.content}`
   answerList.appendChild(singleAnswer)
   answerDiv.append(answerList)
 }
