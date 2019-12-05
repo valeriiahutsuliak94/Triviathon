@@ -34,14 +34,11 @@ function loginUser(user) {
 
     fetch(USERS_URL, configObj)
     .then(resp => resp.json())
-    .then(user => renderUserInfo(user))
+    .then(user =>  {renderUserInfo(user)
+                  renderCorrectAnswers(user)
+    })
 
-    startGame()
-    // Move below to category click
-    // startMessage()
-    // getQuestions()
-    
-}
+  }
 
 function grabUserData(e) {
     return {username: e.target.children[1].value} 
@@ -49,8 +46,10 @@ function grabUserData(e) {
 
 function renderUserInfo(user) {
     const infosec = document.querySelector('.user-info')
-    infosec.innerHTML = `<span data-id= ${user.id}><p>Name: ${user.username}</p><p id="current-score">${user.score}</p>`
-}
+    infosec.innerHTML = `<span data-id= ${user.id}>
+                        <p>Name: ${user.username}</p>
+                        <p id="current-score">${user.score}</p>`
+  }
 
 // user ranking functions
 function getAllUsers() {
@@ -72,17 +71,15 @@ function renderUsers(users) {
 function listUser(user) {
   const userList = document.querySelector('ul')
   const userItem = document.createElement('li')
-  userItem.innerText =`${user.username}   ${user.score}`
+  userItem.innerText = `${user.username}   ${user.score}`
   userList.appendChild(userItem)
- 
-  
 }
 
+// q&a functions
 function renderQuestion(questionObj) {
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
-  
   const answerChoices = [...questionObj.incorrect_answers];
   questionObj.answerIndex = Math.floor(Math.random() * 3);
       
@@ -105,20 +102,20 @@ function renderQuestion(questionObj) {
   slide.insertAdjacentHTML('beforeend',
     `<div id="answer-form">
     <br>
-    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[0]}> <label>${answerChoices[0]}</label><br>
-    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[1]}> <label>${answerChoices[1]}</label><br>
-    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[2]}> <label>${answerChoices[2]}</label><br>
-    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[3]}> <label>${answerChoices[3]}</label><br>
+    <input type="radio" name="answer" value=${answerChoices[0]}> <label>${answerChoices[0]}</label><br>
+    <input type="radio" name="answer" value=${answerChoices[1]}> <label>${answerChoices[1]}</label><br>
+    <input type="radio" name="answer" value=${answerChoices[2]}> <label>${answerChoices[2]}</label><br>
+    <input type="radio" name="answer" value=${answerChoices[3]}> <label>${answerChoices[3]}</label><br>
     </div>`
   )
   slide.appendChild(status)
   inner.appendChild(slide)
 
   
-  slide.addEventListener('click',() => handelSelection(questionObj))
+  slide.addEventListener('click',() => handleSelection(questionObj))
   
       
-  function handelSelection(questionObj){
+  function handleSelection(questionObj){
     const score = document.querySelector('#round-score')
     const clickEl = event.target
     const inputs = slide.getElementsByClassName('answer-btn')
@@ -135,17 +132,13 @@ function renderQuestion(questionObj) {
     }
     if(clickEl.tagName === 'INPUT'){
       const userChoice = clickEl.nextElementSibling.innerText
-      for(let input of inputs) {
-        input.disabled = true
-      }
-      if(userChoice === questionObj.correct_answer){
+      if (userChoice === questionObj.correct_answer) {
        status.innerHTML = '<br><h4 class= "correct">CORRECT!</h4>'
        score.innerText = parseInt(score.innerText) +pointValue
        createAnswer(question= questionObj.question, correct= true)
           }else{
         status.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
         createAnswer(question= questionObj.question, correct= false)
-
       }
     }
   }
@@ -164,16 +157,29 @@ function renderQuestion(questionObj) {
         correct: correct,
         user_id: userId
       })
-
     }
 
     fetch(ANSWERS_URL, configObj)
     .then(resp => resp.json())
-    .then(newAnswer => console.log(newAnswer))
+    .then(answer => console.log(answer))
     .catch(err => console.log(err.message))
   }
 
+}
 
+function renderCorrectAnswers(user) {
+  user.answers.forEach(answer => renderCorrectAnswer(answer))
+}
+
+function renderCorrectAnswer(answer) {
+  const answerDiv = document.querySelector('.answer-div')
+  const answerHead = document.getElementById('answer-head')
+  answerHead.innerText = 'Previous Questions Answered'
+  const answerList = document.createElement('ul')
+  const singleAnswer = document.createElement('li')
+  singleAnswer.innerHTML = `${answer.question}`
+  answerList.appendChild(singleAnswer)
+  answerDiv.append(answerList)
 }
 
 function addQuestions(allQuestions) {
@@ -208,7 +214,8 @@ function finishMessage() {
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
-  slide.innerHTML = `<h3>Congratulations!!!</h3> <br> <button id= "submit-score"> Submit </button>`
+  slide.innerHTML = `<h3>Congratulations! You have reached the finish line!</h3><br>
+                    <button id= "submit-score"> Submit </button>`
   inner.appendChild(slide)
 
   slide.addEventListener('click', () => {
@@ -231,7 +238,6 @@ function finishMessage() {
       fetch(`${USERS_URL}/${userId}`, reqObj)
       .then(resp => resp.json())
       .then(user => renderUserInfo(user))
-      .then(getAllUsers())
     }
   })
 }
