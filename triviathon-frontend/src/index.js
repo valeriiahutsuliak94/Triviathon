@@ -139,7 +139,7 @@ function addQuestions(allQuestions) {
   
 
 function getQuestions() {
-  fetch(USERS_URL)
+  fetch(QUEST_URL)
   .then(resp => resp.json())
   .then(allQuestions => addQuestions(allQuestions))
   .catch(err => console.log(err.message))
