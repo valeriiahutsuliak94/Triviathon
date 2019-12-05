@@ -35,9 +35,7 @@ function loginUser(user) {
 
     fetch(USERS_URL, configObj)
     .then(resp => resp.json())
-    .then(user =>  {renderUserInfo(user)
-                  renderCorrectAnswers(user)
-    })
+    .then(user =>  {renderUserInfo(user)})
     hideForm()
     clearWelcome()
     startGame()
@@ -193,6 +191,8 @@ function renderCorrectAnswer(answer) {
   const answerList = document.createElement('ul')
   const singleAnswer = document.createElement('li')
   singleAnswer.innerHTML = `${answer.question} ${answer.content}`
+  if(answer.correct) { singleAnswer.style.color= 'rgb(7, 224, 7)' }
+  else { singleAnswer.style.color= 'crimson'}
   answerList.appendChild(singleAnswer)
   answerDiv.append(answerList)
 }
@@ -235,7 +235,7 @@ function finishMessage() {
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
-  slide.innerHTML = `<h3>Congratulations!!!</h3> <br> <button id= "submit-score"> Submit Your Score </button>`
+  slide.innerHTML = `<h3>Congratulations, You Have Reached The Finish Line!!!</h3> <br> <button id= "submit-score"> Submit Your Score </button>`
   inner.appendChild(slide)
 
   slide.addEventListener('click', () => {
