@@ -6,6 +6,7 @@ const form = document.getElementById('login-form')
 function main() {
   document.addEventListener('DOMContentLoaded', function(){ 
     // render all users & scores in left sidebar
+    renderCarousel()
     welcomeMessage()
     getAllUsers()
     
@@ -37,8 +38,9 @@ function loginUser(user) {
     .then(user =>  {renderUserInfo(user)
                   renderCorrectAnswers(user)
     })
-
-  }
+    clearWelcome()
+    startGame()
+}
 
 function grabUserData(e) {
     return {username: e.target.children[1].value} 
@@ -161,7 +163,7 @@ function renderQuestion(questionObj) {
 
     fetch(ANSWERS_URL, configObj)
     .then(resp => resp.json())
-    .then(answer => console.log(answer))
+    .then(answer => renderCorrectAnswer(answer))
     .catch(err => console.log(err.message))
   }
 
@@ -189,7 +191,7 @@ function addQuestions(allQuestions) {
   
 
 function getQuestions(categoryID) {
-  fetch(`https://opentdb.com/api.php?amount=10&category=${categoryID}&type=multiple`)
+  fetch(`https://opentdb.com/api.php?amount=3&category=${categoryID}&type=multiple`)
   .then(resp => resp.json())
   .then(allQuestions => addQuestions(allQuestions))
   .catch(err => console.log(err.message))
@@ -235,15 +237,30 @@ function finishMessage() {
     }
 
     if (event.target.id === 'submit-score') {
-      fetch(`${USERS_URL}/${userId}`, reqObj)
-      .then(resp => resp.json())
-      .then(user => renderUserInfo(user))
+      updateScore(userId)
+      clearCarousel()
+      renderCarousel()
+      startGame()
     }
+    
   })
 }
-function startGame() {
+
+function updateScore(userId) {
+  fetch(`${USERS_URL}/${userId}`, reqObj)
+  .then(resp => resp.json())
+  .then(user => renderUserInfo(user))
+
+}
+
+function clearWelcome() {
   let carouselMsg = document.getElementById('carousel-msg')
   carouselMsg.removeChild(carouselMsg.lastElementChild)
+}
+
+function startGame() {
+  let carouselMsg = document.getElementById('carousel-msg')
+
 
   const startSlide = document.createElement('div')
   // startSlide.className = 'carousel-item'
@@ -275,10 +292,27 @@ function startGame() {
   carouselMsg.appendChild(startSlide)
 }
 
-function addCategoryListener() {
-  
+function renderCarousel() {
+  const middleColumn = document.querySelector('#game')
+  middleColumn.innerHTML =`
+  <div id="questions-carousel" class="carousel-slide" data-ride="carousel" data-wrap="false" data-pause="false" data-interval="10000">
+  <div class="carousel-inner">
+    <div id="carousel-msg" class="carousel-item active" data-interval="200">
+    </div>
+    <div id="question-slides"></div>
+  </div>
+  <div id="carousel-footer">
+  <h2>Round Score:</h2>
+  <h2 id="round-score">0</h2>
+  </div>
+  </div>
+`
 }
 
+function clearCarousel() {
+  const middleColumn = document.querySelector('#game')
+  middleColumn.removeChild(middleColumn.firstChild)
+}
 
 
 main()
