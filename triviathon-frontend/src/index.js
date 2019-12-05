@@ -123,6 +123,17 @@ function renderQuestion(questionObj) {
     const score = document.querySelector('#round-score')
     const clickEl = event.target
     const inputs = slide.getElementsByClassName('answer-btn')
+    let pointValue
+    switch(questionObj.difficulty) {
+      case "easy":
+        pointValue = 1;
+        break;
+      case "medium":
+        pointValue = 3;
+        break;
+      case "hard":
+        pointValue = 5;
+    }
     if(clickEl.tagName === 'INPUT'){
       const userChoice = clickEl.nextElementSibling.innerText
       for(let input of inputs) {
@@ -130,7 +141,7 @@ function renderQuestion(questionObj) {
       }
       if(userChoice === questionObj.correct_answer){
        status.innerHTML = '<br><h4 class= "correct">CORRECT!</h4>'
-       score.innerText = parseInt(score.innerText) +1
+       score.innerText = parseInt(score.innerText) +pointValue
        createAnswer(question= questionObj.question, correct= true)
           }else{
         status.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
