@@ -35,7 +35,7 @@ function loginUser(user) {
 
     fetch(USERS_URL, configObj)
     .then(resp => resp.json())
-    .then(user =>  { renderUserInfo(user)
+    .then(user =>  {renderUserInfo(user)
                   renderCorrectAnswers(user)
     })
 
@@ -173,9 +173,9 @@ function renderCorrectAnswers(user) {
 }
 
 function renderCorrectAnswer(answer) {
-  const answerDiv = document.getElementsByClassName('answer-div')
+  const answerDiv = document.querySelector('.answer-div')
   const answerHead = document.getElementById('answer-head')
-  answerHead.innerText = 'Previous Correct Answers'
+  answerHead.innerText = 'Previous Questions Answered'
   const answerList = document.createElement('ul')
   const singleAnswer = document.createElement('li')
   singleAnswer.innerHTML = `${answer.question}`
