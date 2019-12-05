@@ -8,7 +8,6 @@ header {
     font-style: italic;
     font-family: fantasy;
     color: teal;
-    
 }
 
 .card {
@@ -33,8 +32,9 @@ header {
     text-align: center;
 }
 
-.carousel-footer {
-    padding: 20px
+#carousel-footer {
+    padding: 5px;
+    margin-bottom: 5px
 }
 
 .correct {

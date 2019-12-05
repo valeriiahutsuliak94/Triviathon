@@ -38,6 +38,7 @@ function loginUser(user) {
     .then(user =>  {renderUserInfo(user)
                   renderCorrectAnswers(user)
     })
+    hideForm()
     clearWelcome()
     startGame()
 }
@@ -51,7 +52,7 @@ function renderUserInfo(user) {
     infosec.innerHTML = `<span data-id= ${user.id}>
                         <p>Name: ${user.username}</p>
                         <p id="current-score"> ${user.score}</p>`
-                        document.getElementById('login-form').remove()                        
+                                               
   }
 
   
@@ -83,7 +84,10 @@ function listUser(user) {
   userList.appendChild(userItem) 
 }
 
-
+function hideForm() {
+  const loginForm = document.querySelector('#login-form')
+  loginForm.style.visibility = "hidden"
+}
 
 function renderQuestion(questionObj) {
   console.log('-------------')
@@ -207,7 +211,7 @@ function addQuestions(allQuestions) {
   
 
 function getQuestions(categoryID) {
-  fetch(`https://opentdb.com/api.php?amount=1&category=${categoryID}&type=multiple`)
+  fetch(`https://opentdb.com/api.php?amount=10&category=${categoryID}&type=multiple`)
   .then(resp => resp.json())
   .then(allQuestions => addQuestions(allQuestions))
   .catch(err => console.log(err.message))
@@ -235,7 +239,7 @@ function finishMessage() {
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
-  slide.innerHTML = `<h3>Congratulations!!!</h3> <br> <button id= "submit-score"> Submit </button>`
+  slide.innerHTML = `<h3>Congratulations!!!</h3> <br> <button id= "submit-score"> Submit Your Score </button>`
   inner.appendChild(slide)
 
   slide.addEventListener('click', () => {
@@ -274,7 +278,6 @@ function updateScore(userId) {
 function clearWelcome() {
   let carouselMsg = document.getElementById('carousel-msg')
   carouselMsg.removeChild(carouselMsg.lastElementChild)
-  console.log(carouselMsg)
 }
 
 function startGame() {
@@ -291,6 +294,8 @@ function startGame() {
     <button class="category-btn" data-id= 11>Movies</button>
     <button class="category-btn" data-id= 22>Geography</button>
     <button class="category-btn" data-id= 23>History</button>
+    <button class="category-btn" data-id= 13>Theatre</button>
+
   `
   categoryBar.addEventListener('click', () => {
     if (event.target.className === 'category-btn') {
