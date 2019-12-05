@@ -45,3 +45,17 @@ header {
     color: crimson
 }
 
+.navbar {
+    height: 70px;
+    background-color: midnightblue;
+    padding: 10px
+}
+
+.category-btn {
+    padding: 5px;
+}
+
+.game-inst {
+    margin-top: 30%
+}
+
