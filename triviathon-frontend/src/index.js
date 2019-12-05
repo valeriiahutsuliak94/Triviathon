@@ -36,7 +36,6 @@ function loginUser(user) {
     fetch(USERS_URL, configObj)
     .then(resp => resp.json())
     .then(user => renderUserInfo(user))
-
     startGame()
     // Move below to category click
     // startMessage()
@@ -86,7 +85,6 @@ function renderQuestion(questionObj) {
   
   const answerChoices = [...questionObj.incorrect_answers];
   questionObj.answerIndex = Math.floor(Math.random() * 3);
-      
   answerChoices.splice(
         questionObj.answerIndex,
         0,
