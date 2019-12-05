@@ -35,14 +35,11 @@ function loginUser(user) {
 
     fetch(USERS_URL, configObj)
     .then(resp => resp.json())
-    .then(user => renderUserInfo(user))
+    .then(user =>  { renderUserInfo(user)
+                  renderCorrectAnswers(user)
+    })
 
-    startGame()
-    // Move below to category click
-    // startMessage()
-    // getQuestions()
-    
-}
+  }
 
 function grabUserData(e) {
     return {username: e.target.children[1].value} 
@@ -50,8 +47,10 @@ function grabUserData(e) {
 
 function renderUserInfo(user) {
     const infosec = document.querySelector('.user-info')
-    infosec.innerHTML = `<span data-id= ${user.id}><p>Name: ${user.username}</p><p id="current-score">${user.score}</p>`
-}
+    infosec.innerHTML = `<span data-id= ${user.id}>
+                        <p>Name: ${user.username}</p>
+                        <p id="current-score">${user.score}</p>`
+  }
 
 // user ranking functions
 function getAllUsers() {
@@ -114,9 +113,10 @@ function renderQuestion(questionObj) {
   inner.appendChild(slide)
 
   
-slide.addEventListener('click',() => handleSelection(questionObj))
+  slide.addEventListener('click',() => handleSelection(questionObj))
+  
       
-function handleSelection(questionObj) {
+  function handleSelection(questionObj){
     const score = document.querySelector('#round-score')
     const clickEl = event.target
     const inputs = slide.getElementsByClassName('answer-btn')
@@ -139,6 +139,7 @@ function handleSelection(questionObj) {
        createAnswer(question= questionObj.question, correct= true)
           }else{
         status.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
+        createAnswer(question= questionObj.question, correct= false)
       }
     }
   }
@@ -157,16 +158,29 @@ function handleSelection(questionObj) {
         correct: correct,
         user_id: userId
       })
-
     }
 
     fetch(ANSWERS_URL, configObj)
     .then(resp => resp.json())
-    .then(newAnswer => console.log(newAnswer))
+    .then(answer => console.log(answer))
     .catch(err => console.log(err.message))
   }
 
+}
 
+function renderCorrectAnswers(user) {
+  user.answers.forEach(answer => renderCorrectAnswer(answer))
+}
+
+function renderCorrectAnswer(answer) {
+  const answerDiv = document.getElementsByClassName('answer-div')
+  const answerHead = document.getElementById('answer-head')
+  answerHead.innerText = 'Previous Correct Answers'
+  const answerList = document.createElement('ul')
+  const singleAnswer = document.createElement('li')
+  singleAnswer.innerHTML = `${answer.question}`
+  answerList.appendChild(singleAnswer)
+  answerDiv.append(answerList)
 }
 
 function addQuestions(allQuestions) {
