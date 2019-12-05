@@ -3,6 +3,11 @@ class AnswersController < ApplicationController
         answers = Answer.all 
         render json: answers
     end
+
+    def show
+        answer = answer.find_by(id: params[:id])
+        render json: answer
+    end
     
     
     def create
