@@ -58,4 +58,9 @@ header {
 .game-inst {
     margin-top: 30%
 }
+.answers-container {
+    position: relative;
+    bottom: 0;
+    right: 0;
+}
 

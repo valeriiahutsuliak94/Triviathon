@@ -1,12 +1,12 @@
 const USERS_URL = "http://localhost:3000/users"
 const ANSWERS_URL = "http://localhost:3000/answers"
-// const QUEST_URL = `https://opentdb.com/api.php?amount=10&category=${categoryID}&type=multiple`
 const form = document.getElementById('login-form')
 
 // main function
 function main() {
   document.addEventListener('DOMContentLoaded', function(){ 
     // render all users & scores in left sidebar
+    renderCarousel()
     welcomeMessage()
     getAllUsers()
     
@@ -35,12 +35,11 @@ function loginUser(user) {
 
     fetch(USERS_URL, configObj)
     .then(resp => resp.json())
-    .then(user => renderUserInfo(user))
+    .then(user =>  {renderUserInfo(user)
+                  renderCorrectAnswers(user)
+    })
+    clearWelcome()
     startGame()
-    // Move below to category click
-    // startMessage()
-    // getQuestions()
-    
 }
 
 function grabUserData(e) {
@@ -49,8 +48,10 @@ function grabUserData(e) {
 
 function renderUserInfo(user) {
     const infosec = document.querySelector('.user-info')
-    infosec.innerHTML = `<span data-id= ${user.id}><p>Name: ${user.username}</p><p id="current-score">${user.score}</p>`
-}
+    infosec.innerHTML = `<span data-id= ${user.id}>
+                        <p>Name: ${user.username}</p>
+                        <p id="current-score">${user.score}</p>`
+  }
 
 // user ranking functions
 function getAllUsers() {
@@ -82,7 +83,6 @@ function renderQuestion(questionObj) {
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
-  
   const answerChoices = [...questionObj.incorrect_answers];
   questionObj.answerIndex = Math.floor(Math.random() * 3);
   answerChoices.splice(
@@ -168,11 +168,25 @@ function renderQuestion(questionObj) {
 
     fetch(ANSWERS_URL, configObj)
     .then(resp => resp.json())
-    .then(newAnswer => console.log(newAnswer))
+    .then(answer => renderCorrectAnswer(answer))
     .catch(err => console.log(err.message))
   }
 
+}
 
+function renderCorrectAnswers(user) {
+  user.answers.forEach(answer => renderCorrectAnswer(answer))
+}
+
+function renderCorrectAnswer(answer) {
+  const answerDiv = document.querySelector('.answer-div')
+  const answerHead = document.getElementById('answer-head')
+  answerHead.innerText = 'Previous Questions Answered'
+  const answerList = document.createElement('ul')
+  const singleAnswer = document.createElement('li')
+  singleAnswer.innerHTML = `${answer.question}`
+  answerList.appendChild(singleAnswer)
+  answerDiv.append(answerList)
 }
 
 function addQuestions(allQuestions) {
@@ -182,7 +196,7 @@ function addQuestions(allQuestions) {
   
 
 function getQuestions(categoryID) {
-  fetch(`https://opentdb.com/api.php?amount=10&category=${categoryID}&type=multiple`)
+  fetch(`https://opentdb.com/api.php?amount=3&category=${categoryID}&type=multiple`)
   .then(resp => resp.json())
   .then(allQuestions => addQuestions(allQuestions))
   .catch(err => console.log(err.message))
@@ -227,16 +241,30 @@ function finishMessage() {
     }
 
     if (event.target.id === 'submit-score') {
-      fetch(`${USERS_URL}/${userId}`, reqObj)
-      .then(resp => resp.json())
-      .then(user => renderUserInfo(user))
-      .then(getAllUsers())
+      updateScore(userId)
+      clearCarousel()
+      renderCarousel()
+      startGame()
     }
+    
   })
 }
-function startGame() {
+
+function updateScore(userId) {
+  fetch(`${USERS_URL}/${userId}`, reqObj)
+  .then(resp => resp.json())
+  .then(user => renderUserInfo(user))
+
+}
+
+function clearWelcome() {
   let carouselMsg = document.getElementById('carousel-msg')
   carouselMsg.removeChild(carouselMsg.lastElementChild)
+}
+
+function startGame() {
+  let carouselMsg = document.getElementById('carousel-msg')
+
 
   const startSlide = document.createElement('div')
   // startSlide.className = 'carousel-item'
@@ -268,10 +296,27 @@ function startGame() {
   carouselMsg.appendChild(startSlide)
 }
 
-function addCategoryListener() {
-  
+function renderCarousel() {
+  const middleColumn = document.querySelector('#game')
+  middleColumn.innerHTML =`
+  <div id="questions-carousel" class="carousel-slide" data-ride="carousel" data-wrap="false" data-pause="false" data-interval="10000">
+  <div class="carousel-inner">
+    <div id="carousel-msg" class="carousel-item active" data-interval="200">
+    </div>
+    <div id="question-slides"></div>
+  </div>
+  <div id="carousel-footer">
+  <h2>Round Score:</h2>
+  <h2 id="round-score">0</h2>
+  </div>
+  </div>
+`
 }
 
+function clearCarousel() {
+  const middleColumn = document.querySelector('#game')
+  middleColumn.removeChild(middleColumn.firstChild)
+}
 
 
 main()
