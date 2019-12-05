@@ -219,6 +219,8 @@ function finishMessage() {
       .then(user => renderUserInfo(user))
       .then(getAllUsers())
     }
+
+
    
   })
 
