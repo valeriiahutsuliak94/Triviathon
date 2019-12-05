@@ -153,7 +153,7 @@ function renderQuestion(questionObj) {
        createAnswer(question= questionObj.question, correct= true, content= userChoice)
           }else{
         status.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
-        createAnswer(question= questionObj.question, correct= false)
+        createAnswer(question= questionObj.question, correct= false, content= userChoice)
         
  
       }
