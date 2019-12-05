@@ -145,6 +145,8 @@ function startMessage() {
                         GET READY...GET SET...`
 }
 
+
+
 function finishMessage() {
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
