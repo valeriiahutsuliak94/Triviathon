@@ -37,6 +37,7 @@ function loginUser(user) {
     .then(user => renderUserInfo(user))
     startMessage()
     getQuestions()
+    
   }
 
 function grabUserData(e) {
@@ -55,16 +56,23 @@ function getAllUsers() {
   .then(users => renderUsers(users))
 }
 
-function renderUsers(users) {
-  users.forEach(user => listUser(user))
-}
+  function renderUsers(users) {
+    const userList = document.querySelector('ul')
+    userList.innerHTML = " "
+    users.sort(function(a,b){
+      return b.score - a.score
+    })
+    const topUsers = users.slice(0, 10) 
+    topUsers.forEach(user => listUser(user))
+  }
 
 function listUser(user) {
   const userList = document.querySelector('ul')
   const userItem = document.createElement('li')
-  userItem.innerText = `${user.username}   ${user.score}`
+  userItem.innerText =`${user.username}   ${user.score}`
   userList.appendChild(userItem)
-  console.log(user.score)
+ 
+  
 }
 
 function renderQuestion(questionObj) {
@@ -131,7 +139,7 @@ function addQuestions(allQuestions) {
   
 
 function getQuestions() {
-  fetch(QUEST_URL)
+  fetch(USERS_URL)
   .then(resp => resp.json())
   .then(allQuestions => addQuestions(allQuestions))
   .catch(err => console.log(err.message))
@@ -145,6 +153,7 @@ function welcomeMessage() {
   welcomeMsg.innerText = 'Welcome! Please Login to Continue'
   carouselMsg.append(welcomeMsg)
 }
+
 
 function startMessage() {
   let startMsg = document.getElementById('mid-header')
@@ -182,6 +191,7 @@ function finishMessage() {
       fetch(`${USERS_URL}/${userId}`, reqObj)
       .then(resp => resp.json())
       .then(user => renderUserInfo(user))
+      .then(getAllUsers())
     }
   })
 
