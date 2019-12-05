@@ -35,7 +35,10 @@ function loginUser(user) {
 
     fetch(USERS_URL, configObj)
     .then(resp => resp.json())
-    .then(user => renderUserInfo(user))
+    .then(user =>  { renderUserInfo(user)
+                  renderCorrectAnswers(user)
+    })
+
     startMessage()
     getQuestions()
     
@@ -157,6 +160,10 @@ function renderQuestion(questionObj) {
     .catch(err => console.log(err.message))
   }
 
+}
+
+function renderCorrectAnswers(user) {
+  user.answers.forEach(answer => renderCorrectAnswer(user))
 }
 
 function renderCorrectAnswer(answer) {
