@@ -51,7 +51,8 @@ function renderUserInfo(user) {
     const infosec = document.querySelector('.user-info')
     infosec.innerHTML = `<span data-id= ${user.id}>
                         <p>Name: ${user.username}</p>
-                        <p id="current-score">${user.score}</p>`
+                        <label>Total Score:<p id="current-score">${user.score}</p></label>
+                        <label>Total Answers:<p>${user.answers.length}</p></label>`
   }
 
 // user ranking functions
@@ -153,9 +154,9 @@ function renderCorrectAnswers(user) {
 }
 
 function renderCorrectAnswer(answer) {
-  const answerDiv = document.getElementsByClassName('answer-div')
+  const answerDiv = document.querySelector('.answer-div')
   const answerHead = document.getElementById('answer-head')
-  answerHead.innerText = 'Previous Correct Answers'
+  answerHead.innerText = 'Previous Answers'
   const answerList = document.createElement('ul')
   const singleAnswer = document.createElement('li')
   singleAnswer.innerHTML = `${answer.question}`
