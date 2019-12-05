@@ -166,7 +166,7 @@ function addQuestions(allQuestions) {
   
 
 function getQuestions() {
-  fetch(USERS_URL)
+  fetch(QUEST_URL)
   .then(resp => resp.json())
   .then(allQuestions => addQuestions(allQuestions))
   .catch(err => console.log(err.message))
@@ -184,7 +184,7 @@ function welcomeMessage() {
 
 function startMessage() {
   let startMsg = document.getElementById('mid-header')
-  startMsg.innerText = `You have 30 seconds to answer each question
+  startMsg.innerText = `You have 10 seconds to answer each question
                         GET READY...GET SET...`
 }
 
