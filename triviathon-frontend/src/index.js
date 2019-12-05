@@ -1,4 +1,5 @@
 const USERS_URL = "http://localhost:3000/users"
+const ANSWERS_URL = "http://localhost:3000/answers"
 const QUEST_URL = "https://opentdb.com/api.php?amount=3&type=multiple"
 const form = document.getElementById('login-form')
 
@@ -124,12 +125,38 @@ function renderQuestion(questionObj) {
       if(userChoice === questionObj.correct_answer){
        status.innerHTML = '<br><h4 class= "correct">CORRECT!</h4>'
        score.innerText = parseInt(score.innerText) +1
+       createAnswer(question= questionObj.question, correct= true)
           }else{
         status.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
+        createAnswer(question= questionObj.question, correct= false)
 
       }
     }
   }
+  function createAnswer(question, correct) {
+    const span = document.querySelector('span')
+    const userId = span.dataset.id
+    const configObj = {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        question: question,
+        correct: correct,
+        user_id: userId
+      })
+
+    }
+
+    fetch(ANSWERS_URL, configObj)
+    .then(resp => resp.json())
+    .then(newAnswer => console.log(newAnswer))
+    .catch(err => console.log(err.message))
+  }
+
+
 }
 
 function addQuestions(allQuestions) {
@@ -168,7 +195,6 @@ function finishMessage() {
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
   slide.innerHTML = `<h3>Congratulations!!!</h3> <br> <button id= "submit-score"> Submit </button>`
-  const submitScoreBtn = document.querySelector('#submit-score')
   inner.appendChild(slide)
 
   slide.addEventListener('click', () => {
@@ -194,6 +220,8 @@ function finishMessage() {
       .then(getAllUsers())
     }
   })
+
+
 
 
 
