@@ -50,14 +50,19 @@ function renderUserInfo(user) {
     const infosec = document.querySelector('.user-info')
     infosec.innerHTML = `<span data-id= ${user.id}>
                         <p>Name: ${user.username}</p>
-                        <p id="current-score">${user.score}</p>`
+                        <p id="current-score"> ${user.score}</p>`
+                        document.getElementById('login-form').remove()                        
   }
+
+  
+  
 
 // user ranking functions
 function getAllUsers() {
   fetch(USERS_URL)
   .then(resp => resp.json())
   .then(users => renderUsers(users))
+
 }
 
 function renderUsers(users) {
@@ -70,14 +75,15 @@ function renderUsers(users) {
   topUsers.forEach(user => listUser(user))
 }
 
+
 function listUser(user) {
   const userList = document.querySelector('ul')
   const userItem = document.createElement('li')
   userItem.innerText =`${user.username}   ${user.score}`
-  userList.appendChild(userItem)
- 
-  
+  userList.appendChild(userItem) 
 }
+
+
 
 function renderQuestion(questionObj) {
   console.log('-------------')
@@ -145,7 +151,8 @@ function renderQuestion(questionObj) {
           }else{
         status.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
         createAnswer(question= questionObj.question, correct= false)
-
+        
+ 
       }
     }
   }
