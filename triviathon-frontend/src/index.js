@@ -74,18 +74,19 @@ function renderUsers(users) {
 function listUser(user) {
   const userList = document.querySelector('ul')
   const userItem = document.createElement('li')
-  userItem.innerText = `${user.username}   ${user.score}`
+  userItem.innerText =`${user.username}   ${user.score}`
   userList.appendChild(userItem)
+ 
+  
 }
 
-// q&a functions
 function renderQuestion(questionObj) {
+  console.log('-------------')
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
   const answerChoices = [...questionObj.incorrect_answers];
   questionObj.answerIndex = Math.floor(Math.random() * 3);
-      
   answerChoices.splice(
         questionObj.answerIndex,
         0,
@@ -105,20 +106,20 @@ function renderQuestion(questionObj) {
   slide.insertAdjacentHTML('beforeend',
     `<div id="answer-form">
     <br>
-    <input type="radio" name="answer" value=${answerChoices[0]}> <label>${answerChoices[0]}</label><br>
-    <input type="radio" name="answer" value=${answerChoices[1]}> <label>${answerChoices[1]}</label><br>
-    <input type="radio" name="answer" value=${answerChoices[2]}> <label>${answerChoices[2]}</label><br>
-    <input type="radio" name="answer" value=${answerChoices[3]}> <label>${answerChoices[3]}</label><br>
+    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[0]}> <label>${answerChoices[0]}</label><br>
+    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[1]}> <label>${answerChoices[1]}</label><br>
+    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[2]}> <label>${answerChoices[2]}</label><br>
+    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[3]}> <label>${answerChoices[3]}</label><br>
     </div>`
   )
   slide.appendChild(status)
   inner.appendChild(slide)
 
   
-  slide.addEventListener('click',() => handleSelection(questionObj))
+  slide.addEventListener('click',() => handelSelection(questionObj))
   
       
-  function handleSelection(questionObj){
+  function handelSelection(questionObj){
     const score = document.querySelector('#round-score')
     const clickEl = event.target
     const inputs = slide.getElementsByClassName('answer-btn')
@@ -135,13 +136,17 @@ function renderQuestion(questionObj) {
     }
     if(clickEl.tagName === 'INPUT'){
       const userChoice = clickEl.nextElementSibling.innerText
-      if (userChoice === questionObj.correct_answer) {
+      for(let input of inputs) {
+        input.disabled = true
+      }
+      if(userChoice === questionObj.correct_answer){
        status.innerHTML = '<br><h4 class= "correct">CORRECT!</h4>'
        score.innerText = parseInt(score.innerText) +pointValue
        createAnswer(question= questionObj.question, correct= true)
           }else{
         status.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
         createAnswer(question= questionObj.question, correct= false)
+
       }
     }
   }
@@ -160,6 +165,7 @@ function renderQuestion(questionObj) {
         correct: correct,
         user_id: userId
       })
+
     }
 
     fetch(ANSWERS_URL, configObj)
@@ -184,15 +190,18 @@ function renderCorrectAnswer(answer) {
   answerList.appendChild(singleAnswer)
   answerDiv.append(answerList)
 }
+  
+
 
 function addQuestions(allQuestions) {
+
   allQuestions.results.forEach(questionObj => renderQuestion(questionObj))
   finishMessage()
 }
   
 
 function getQuestions(categoryID) {
-  fetch(`https://opentdb.com/api.php?amount=3&category=${categoryID}&type=multiple`)
+  fetch(`https://opentdb.com/api.php?amount=1&category=${categoryID}&type=multiple`)
   .then(resp => resp.json())
   .then(allQuestions => addQuestions(allQuestions))
   .catch(err => console.log(err.message))
@@ -207,18 +216,20 @@ function welcomeMessage() {
   carouselMsg.append(welcomeMsg)
 }
 
-function startMessage() {
-  let startMsg = document.getElementById('start-game')
-  startMsg.innerHTML = `<h3>You have 10 seconds to answer each question
-                        GET READY...GET SET...</h3>`
+function readyMessage() {
+  let carouselActive = document.querySelector('.active')
+  carouselActive.innerHTML = ''
+  startMsg = document.createElement('h3')
+  startMsg.innerText = `You have 10 seconds to answer each question
+                        GET READY...GET SET...`
+  carouselActive.append(startMsg)
 }
 
 function finishMessage() {
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
-  slide.innerHTML = `<h3>Congratulations! You have reached the finish line!</h3><br>
-                    <button id= "submit-score"> Submit </button>`
+  slide.innerHTML = `<h3>Congratulations!!!</h3> <br> <button id= "submit-score"> Submit </button>`
   inner.appendChild(slide)
 
   slide.addEventListener('click', () => {
@@ -239,8 +250,8 @@ function finishMessage() {
 
     if (event.target.id === 'submit-score') {
       updateScore(userId)
-      clearCarousel()
-      renderCarousel()
+      // clearCarousel()
+      // renderCarousel()
       startGame()
     }
     
@@ -257,15 +268,14 @@ function updateScore(userId) {
 function clearWelcome() {
   let carouselMsg = document.getElementById('carousel-msg')
   carouselMsg.removeChild(carouselMsg.lastElementChild)
+  console.log(carouselMsg)
 }
 
 function startGame() {
-  let carouselMsg = document.getElementById('carousel-msg')
-
-
-  const startSlide = document.createElement('div')
-  // startSlide.className = 'carousel-item'
-  startSlide.id = 'start-game'
+  let carouselActive = document.querySelector('.active')
+  carouselActive.innerHTML = ''
+  const categorySlide = document.createElement('div')
+  categorySlide.id = 'first-slide'
 
   const categoryBar = document.createElement('div')
   categoryBar.className="navbar"
@@ -278,9 +288,9 @@ function startGame() {
   `
   categoryBar.addEventListener('click', () => {
     if (event.target.className === 'category-btn') {
-      console.log(event.target)
       let categoryId = event.target.dataset.id
-      startMessage()
+      categorySlide.innerHTML = ''
+      readyMessage()
       getQuestions(categoryId)
     }
   })
@@ -289,8 +299,8 @@ function startGame() {
   gameStart.className='game-inst'
   gameStart.innerText = 'Choose a category to start'
 
-  startSlide.append(categoryBar, gameStart)
-  carouselMsg.appendChild(startSlide)
+  categorySlide.append(categoryBar, gameStart)
+  carouselActive.appendChild(categorySlide)
 }
 
 function renderCarousel() {
@@ -311,18 +321,11 @@ function renderCarousel() {
 }
 
 function clearCarousel() {
+  // console.log('clearCaro')
+  // debugger;
   const middleColumn = document.querySelector('#game')
-  middleColumn.removeChild(middleColumn.firstChild)
+  middleColumn.innerHTML = ''
 }
 
 
 main()
-
-
-
-
-   
-
-    
-
-
