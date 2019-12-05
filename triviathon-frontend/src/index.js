@@ -47,7 +47,7 @@ function grabUserData(e) {
 
 function renderUserInfo(user) {
     const infosec = document.querySelector('.user-info')
-    infosec.innerHTML = `<span data-id= ${user.id}><p>Name: ${user.username}</p><p id="current-score">${user.score}</p>`
+    infosec.innerHTML = `<span data-id= ${user.id}><p>Name: ${user.username}</p><p id="current-score"> Score:${user.score}</p>`
   }
 
 // user ranking functions
@@ -219,6 +219,7 @@ function finishMessage() {
       .then(user => renderUserInfo(user))
       .then(getAllUsers())
     }
+   
   })
 
 
