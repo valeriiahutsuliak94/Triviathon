@@ -188,6 +188,8 @@ function renderCorrectAnswer(answer) {
   answerList.appendChild(singleAnswer)
   answerDiv.append(answerList)
 }
+  
+
 
 function addQuestions(allQuestions) {
   allQuestions.results.forEach(questionObj => renderQuestion(questionObj))
@@ -244,6 +246,7 @@ function finishMessage() {
       updateScore(userId)
       clearCarousel()
       renderCarousel()
+      getQuestions()
       startGame()
     }
     
