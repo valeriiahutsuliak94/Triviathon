@@ -1,5 +1,6 @@
 const USERS_URL = "http://localhost:3000/users"
-const QUEST_URL = "https://opentdb.com/api.php?amount=3&type=multiple"
+const ANSWERS_URL = "http://localhost:3000/answers"
+const QUEST_URL = "https://opentdb.com/api.php?amount=10&type=multiple"
 const form = document.getElementById('login-form')
 
 // main function
@@ -34,7 +35,10 @@ function loginUser(user) {
 
     fetch(USERS_URL, configObj)
     .then(resp => resp.json())
-    .then(user => renderUserInfo(user))
+    .then(user =>  { renderUserInfo(user)
+                  renderCorrectAnswers(user)
+    })
+
     startMessage()
     getQuestions()
   }
@@ -45,7 +49,9 @@ function grabUserData(e) {
 
 function renderUserInfo(user) {
     const infosec = document.querySelector('.user-info')
-    infosec.innerHTML = `<span data-id= ${user.id}><p>Name: ${user.username}</p><p id="current-score">${user.score}</p>`
+    infosec.innerHTML = `<span data-id= ${user.id}>
+                        <p>Name: ${user.username}</p>
+                        <p id="current-score">${user.score}</p>`
   }
 
 // user ranking functions
@@ -100,9 +106,10 @@ function renderQuestion(questionObj) {
   inner.appendChild(slide)
 
   
-slide.addEventListener('click',() => handleSelection(questionObj))
+  slide.addEventListener('click',() => handleSelection(questionObj))
+  
       
-function handleSelection(questionObj) {
+  function handleSelection(questionObj){
     const score = document.querySelector('#round-score')
     const clickEl = event.target
     if (clickEl.tagName === 'INPUT') {
@@ -112,9 +119,48 @@ function handleSelection(questionObj) {
        score.innerText = parseInt(score.innerText) + 1
           } else {
         status.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
+        createAnswer(question= questionObj.question, correct= false)
       }
     }
   }
+
+  function createAnswer(question, correct) {
+    const span = document.querySelector('span')
+    const userId = span.dataset.id
+    const configObj = {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        question: question,
+        correct: correct,
+        user_id: userId
+      })
+    }
+
+    fetch(ANSWERS_URL, configObj)
+    .then(resp => resp.json())
+    .then(answer => console.log(answer))
+    .catch(err => console.log(err.message))
+  }
+
+}
+
+function renderCorrectAnswers(user) {
+  user.answers.forEach(answer => renderCorrectAnswer(user))
+}
+
+function renderCorrectAnswer(answer) {
+  const answerDiv = document.getElementsByClassName('answer-div')
+  const answerHead = document.findElementsById('answer-head')
+  answerHead.innerText = 'Previous Correct Answers'
+  const answerList = document.createElement('ul')
+  const singleAnswer = document.createElement('li')
+  singleAnswer.innerHTML = `${answer.question}`
+  answerList.appendChild(singleAnswer)
+  answerDiv.append(answerList)
 }
 
 function addQuestions(allQuestions) {
