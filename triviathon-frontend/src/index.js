@@ -1,6 +1,6 @@
 const USERS_URL = "http://localhost:3000/users"
 const ANSWERS_URL = "http://localhost:3000/answers"
-const QUEST_URL = "https://opentdb.com/api.php?amount=3&type=multiple"
+// const QUEST_URL = `https://opentdb.com/api.php?amount=10&category=${categoryID}&type=multiple`
 const form = document.getElementById('login-form')
 
 // main function
@@ -36,19 +36,22 @@ function loginUser(user) {
     fetch(USERS_URL, configObj)
     .then(resp => resp.json())
     .then(user => renderUserInfo(user))
-    startMessage()
-    getQuestions()
+
+    startGame()
+    // Move below to category click
+    // startMessage()
+    // getQuestions()
     
-  }
+}
 
 function grabUserData(e) {
     return {username: e.target.children[1].value} 
-  }
+}
 
 function renderUserInfo(user) {
     const infosec = document.querySelector('.user-info')
     infosec.innerHTML = `<span data-id= ${user.id}><p>Name: ${user.username}</p><p id="current-score">${user.score}</p>`
-  }
+}
 
 // user ranking functions
 function getAllUsers() {
@@ -57,15 +60,15 @@ function getAllUsers() {
   .then(users => renderUsers(users))
 }
 
-  function renderUsers(users) {
-    const userList = document.querySelector('ul')
-    userList.innerHTML = " "
-    users.sort(function(a,b){
-      return b.score - a.score
-    })
-    const topUsers = users.slice(0, 10) 
-    topUsers.forEach(user => listUser(user))
-  }
+function renderUsers(users) {
+  const userList = document.querySelector('ul')
+  userList.innerHTML = " "
+  users.sort(function(a,b){
+    return b.score - a.score
+  })
+  const topUsers = users.slice(0, 10) 
+  topUsers.forEach(user => listUser(user))
+}
 
 function listUser(user) {
   const userList = document.querySelector('ul')
@@ -81,7 +84,6 @@ function renderQuestion(questionObj) {
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
   
-
   const answerChoices = [...questionObj.incorrect_answers];
   questionObj.answerIndex = Math.floor(Math.random() * 3);
       
@@ -94,9 +96,13 @@ function renderQuestion(questionObj) {
   const question_content = document.createElement('h3')
   question_content.innerHTML = questionObj.question
 
+  const question_info = document.createElement('p')
+  question_info.className = 'question-stats'
+  question_info.innerText= `${questionObj.category}     Difficulty: ${questionObj.difficulty}`
+
   const status = document.createElement('div')
   
-  slide.appendChild(question_content)
+  slide.append(question_info, question_content)
   slide.insertAdjacentHTML('beforeend',
     `<div id="answer-form">
     <br>
@@ -133,6 +139,7 @@ function renderQuestion(questionObj) {
       }
     }
   }
+
   function createAnswer(question, correct) {
     const span = document.querySelector('span')
     const userId = span.dataset.id
@@ -165,8 +172,8 @@ function addQuestions(allQuestions) {
 }
   
 
-function getQuestions() {
-  fetch(QUEST_URL)
+function getQuestions(categoryID) {
+  fetch(`https://opentdb.com/api.php?amount=10&category=${categoryID}&type=multiple`)
   .then(resp => resp.json())
   .then(allQuestions => addQuestions(allQuestions))
   .catch(err => console.log(err.message))
@@ -181,14 +188,11 @@ function welcomeMessage() {
   carouselMsg.append(welcomeMsg)
 }
 
-
 function startMessage() {
-  let startMsg = document.getElementById('mid-header')
-  startMsg.innerText = `You have 10 seconds to answer each question
-                        GET READY...GET SET...`
+  let startMsg = document.getElementById('start-game')
+  startMsg.innerHTML = `<h3>You have 10 seconds to answer each question
+                        GET READY...GET SET...</h3>`
 }
-
-
 
 function finishMessage() {
   const inner = document.querySelector('#question-slides')
@@ -220,29 +224,45 @@ function finishMessage() {
       .then(getAllUsers())
     }
   })
-
-  // function startGame() {
-  //   const inner = document.querySelector('#question-slides')
-  //   const startSlide = document.createElement('div')
-  //   startSlide.className = 'carousel-item'
-  //   startSlide.id = 'start-game'
-
-  //   const categoryBar = document.createElement('div')
-  //   categoryBar.innerHTML = `<nav class="navbar navbar-light bg-light">
-  //   <form class="form-inline">
-  //     <button class="btn btn-outline-success" type="button">Main button</button>
-  //     <button class="btn btn-sm btn-outline-secondary" type="button">Smaller button</button>
-  //   </form>
-  // </nav>`
-  
-
-  }
-
-
-
-
-
 }
+function startGame() {
+  let carouselMsg = document.getElementById('carousel-msg')
+  carouselMsg.removeChild(carouselMsg.lastElementChild)
+
+  const startSlide = document.createElement('div')
+  // startSlide.className = 'carousel-item'
+  startSlide.id = 'start-game'
+
+  const categoryBar = document.createElement('div')
+  categoryBar.className="navbar"
+  categoryBar.innerHTML = `
+    <button class="category-btn" data-id= 9>General</button>
+    <button class="category-btn" data-id= 10>Books</button>
+    <button class="category-btn" data-id= 11>Movies</button>
+    <button class="category-btn" data-id= 22>Geography</button>
+    <button class="category-btn" data-id= 23>History</button>
+  `
+  categoryBar.addEventListener('click', () => {
+    if (event.target.className === 'category-btn') {
+      console.log(event.target)
+      let categoryId = event.target.dataset.id
+      startMessage()
+      getQuestions(categoryId)
+    }
+  })
+
+  const gameStart = document.createElement('h2')
+  gameStart.className='game-inst'
+  gameStart.innerText = 'Choose a category to start'
+
+  startSlide.append(categoryBar, gameStart)
+  carouselMsg.appendChild(startSlide)
+}
+
+function addCategoryListener() {
+  
+}
+
 
 
 main()
