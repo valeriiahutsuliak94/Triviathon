@@ -164,7 +164,6 @@ function renderQuestion(questionObj) {
        score.innerText = parseInt(score.innerText) + pointValue
        createAnswer(question= questionObj.question, correct= true, content= userChoice)
           }else{
-            console.log(userChoice, cleanAns)
         status.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
         createAnswer(question= questionObj.question, correct= false, content= userChoice)
       }
@@ -228,7 +227,7 @@ function addQuestions(allQuestions) {
 }
   
 function getQuestions(categoryID) {
-  fetch(`https://opentdb.com/api.php?amount=13&category=${categoryID}&type=multiple`)
+  fetch(`https://opentdb.com/api.php?amount=5&category=${categoryID}&type=multiple`)
   .then(resp => resp.json())
   .then(allQuestions => addQuestions(allQuestions))
   .catch(err => console.log(err.message))
@@ -343,7 +342,7 @@ function renderCarousel() {
 
 function middleColumnContent() {
   return `
-    <div id="questions-carousel" class="carousel-slide" data-ride="carousel" data-wrap="false" data-pause="false" data-interval="5000">
+    <div id="questions-carousel" class="carousel-slide" data-ride="carousel" data-wrap="false" data-pause="false" data-interval="10000">
     <div class="carousel-inner">
     <div id="carousel-msg" class="carousel-item active" data-interval="200">
     </div>
