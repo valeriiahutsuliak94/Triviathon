@@ -36,7 +36,7 @@ function loginUser(user) {
     fetch(USERS_URL, configObj)
     .then(resp => resp.json())
     .then(user =>  {renderUserInfo(user)
-                  renderCorrectAnswers(user)
+                  
     })
     hideForm()
     clearWelcome()
@@ -52,12 +52,19 @@ function renderUserInfo(user) {
     infosec.innerHTML = `<span data-id= ${user.id}>
                         <p>Name: ${user.username}</p>
                         <label>Total Score:<p id="current-score">${user.score}</p></label><br>
-                        <label>Total Attempts:<p>${user.answers.length}</p></label>`
+                        <label>Total Attempts:<p>${user.answers.length}</p></label>
+                        <br>
+                        <button id="exit-bttn"> Log Out </button>`
+    let exitForm = document.getElementById('exit-bttn')
+    exitForm.addEventListener('click', () => logOut());
+                      
   }
 
-  
-  
 
+  function logOut(){
+    return window.location.reload();//welcomeMessage()
+  }
+  
 // user ranking functions
 function getAllUsers() {
   fetch(USERS_URL)
@@ -88,6 +95,7 @@ function hideForm() {
   const loginForm = document.querySelector('#login-form')
   loginForm.style.visibility = "hidden"
 }
+
 
 function renderQuestion(questionObj) {
   console.log('-------------')
