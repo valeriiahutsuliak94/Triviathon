@@ -170,14 +170,14 @@ function renderQuestion(questionObj) {
       }
     }
   }
+}
 
-  function createAnswer(question, correct, content) {
-    const configObj = postAnswer(question, correct, content)
-    fetch(ANSWERS_URL, configObj)
-    .then(resp => resp.json())
-    .then(answer => renderCorrectAnswer(answer))
-    .catch(err => console.log(err.message))
-  }
+function createAnswer(question, correct, content) {
+  const configObj = postAnswer(question, correct, content)
+  fetch(ANSWERS_URL, configObj)
+  .then(resp => resp.json())
+  .then(answer => renderCorrectAnswer(answer))
+  .catch(err => console.log(err.message))
 }
 
 function answerFormContent(answerChoices) {
@@ -206,10 +206,6 @@ function postAnswer(question, correct, content) {
       content: content
     })
   }
-}
-
-function renderCorrectAnswers(user) {
-  user.answers.forEach(answer => renderCorrectAnswer(answer))
 }
 
 function renderCorrectAnswer(answer) {
@@ -256,19 +252,20 @@ function readyMessage() {
   carouselActive.append(startMsg)
 }
 
-
-
 function finishMessage() {
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
   slide.innerHTML = `<h3>Congratulations, You Have Reached The Finish Line!!!</h3> <br> <button id= "submit-score"> Submit Your Score </button>`
   inner.appendChild(slide)
+  handleSubmitScore(slide)
+}
 
-  slide.addEventListener('click', () => {
-    const span = document.querySelector('span')
-    const userId = span.dataset.id
+function handleSubmitScore(slide) {
+  slide.addEventListener('click', (event) => {
     if (event.target.id === 'submit-score') {
+      const span = document.querySelector('span')
+      const userId = span.dataset.id
       updateScore(userId)
       startGame()
     }
@@ -307,13 +304,19 @@ function startGame() {
   carouselActive.innerHTML = ''
   const categorySlide = document.createElement('div')
   categorySlide.id = 'first-slide'
-
   const categoryBar = document.createElement('div')
   categoryBar.className="navbar"
   categoryBar.innerHTML = categoryBarContent()
+  categoryBarHandler(categoryBar, categorySlide)
+  const gameStart = document.createElement('h2')
+  gameStart.className='game-inst'
+  gameStart.innerText = 'Choose a category to start'
+  categorySlide.append(categoryBar, gameStart)
+  carouselActive.appendChild(categorySlide)
+}
 
-  categoryBar.addEventListener('click', () => {
-    let carouselActive = document.querySelector('.active')
+function categoryBarHandler(categoryBar, categorySlide) {
+  categoryBar.addEventListener('click', (event) => {
     if (event.target.className === 'category-btn') {
       let categoryId = event.target.dataset.id
       categorySlide.innerHTML = ''
@@ -321,13 +324,6 @@ function startGame() {
       getQuestions(categoryId)
     }
   })
-
-  const gameStart = document.createElement('h2')
-  gameStart.className='game-inst'
-  gameStart.innerText = 'Choose a category to start'
-
-  categorySlide.append(categoryBar, gameStart)
-  carouselActive.appendChild(categorySlide)
 }
 
 function categoryBarContent() {
@@ -366,3 +362,6 @@ function clearCarousel() {
 }
 
 main()
+
+
+
