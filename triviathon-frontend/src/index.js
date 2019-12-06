@@ -28,7 +28,6 @@ function loginUser(user) {
   fetch(USERS_URL, configObj)
   .then(resp => resp.json())
   .then(user =>  {renderUserInfo(user)
-                  renderCorrectAnswers(user)
     })
   hideForm()
   clearWelcome()
@@ -108,7 +107,6 @@ function renderQuestion(questionObj) {
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
   const answerChoices = [...questionObj.incorrect_answers];
-  console.log(answerChoices)
   questionObj.answerIndex = Math.floor(Math.random() * 3);
   answerChoices.splice(
         questionObj.answerIndex,
@@ -132,12 +130,20 @@ function renderQuestion(questionObj) {
 
   
   slide.addEventListener('click',() => handelSelection(questionObj))
+
   
   function handelSelection(questionObj){
     const score = document.querySelector('#round-score')
     const clickEl = event.target
     const inputs = slide.getElementsByClassName('answer-btn')
     let pointValue
+    let cleanAns = questionObj.correct_answer.replace(/&#039;/, "'")
+    cleanAns = cleanAns.replace(/&euml;/, 'ë')
+    cleanAns = cleanAns.replace(/&eacute;/, 'é')
+    cleanAns = cleanAns.replace(/&quot;/, '"')
+    cleanAns = cleanAns.replace(/&quot;/, '"')
+
+
     switch(questionObj.difficulty) {
       case "easy":
         pointValue = 1;
@@ -153,11 +159,12 @@ function renderQuestion(questionObj) {
       for(let input of inputs) {
         input.disabled = true
       }
-      if(userChoice === questionObj.correct_answer){
+      if(userChoice == cleanAns){
        status.innerHTML = '<br><h4 class= "correct">CORRECT!</h4>'
        score.innerText = parseInt(score.innerText) + pointValue
        createAnswer(question= questionObj.question, correct= true, content= userChoice)
           }else{
+            console.log(userChoice, cleanAns)
         status.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
         createAnswer(question= questionObj.question, correct= false, content= userChoice)
       }
@@ -225,7 +232,7 @@ function addQuestions(allQuestions) {
 }
   
 function getQuestions(categoryID) {
-  fetch(`https://opentdb.com/api.php?amount=3&category=${categoryID}&type=multiple`)
+  fetch(`https://opentdb.com/api.php?amount=13&category=${categoryID}&type=multiple`)
   .then(resp => resp.json())
   .then(allQuestions => addQuestions(allQuestions))
   .catch(err => console.log(err.message))
@@ -340,7 +347,7 @@ function renderCarousel() {
 
 function middleColumnContent() {
   return `
-    <div id="questions-carousel" class="carousel-slide" data-ride="carousel" data-wrap="false" data-pause="false" data-interval="10000">
+    <div id="questions-carousel" class="carousel-slide" data-ride="carousel" data-wrap="false" data-pause="false" data-interval="5000">
     <div class="carousel-inner">
     <div id="carousel-msg" class="carousel-item active" data-interval="200">
     </div>
