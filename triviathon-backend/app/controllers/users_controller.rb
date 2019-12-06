@@ -17,7 +17,7 @@ class UsersController < ApplicationController
   def update
     user = User.find_by(id: params[:id])
     user.update(score: params[:score])
-    render json: user
+    render json: user, include: :answers
   end 
 
 end
