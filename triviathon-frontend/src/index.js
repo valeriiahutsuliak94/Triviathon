@@ -58,7 +58,9 @@ function renderUserInfo(user) {
   infosec.innerHTML = `<span data-id= ${user.id}>
                         <p>Name: ${user.username}</p>
                         <label>Total Score:<p id="current-score">${user.score}</p></label><br>
-                        <label>Total Attempts:<p>${user.answers.length}</p></label>`
+                        <label>Total Attempts:<p>${user.answers.length}</p></label>
+                        </span>
+                        `
   }
 
 // user ranking functions
@@ -93,11 +95,11 @@ function hideForm() {
 
 // q&a functions
 function renderQuestion(questionObj) {
-  console.log('-------------')
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
   const answerChoices = [...questionObj.incorrect_answers];
+  console.log(answerChoices)
   questionObj.answerIndex = Math.floor(Math.random() * 3);
   answerChoices.splice(
         questionObj.answerIndex,
@@ -110,12 +112,12 @@ function renderQuestion(questionObj) {
 
   const question_info = document.createElement('p')
   question_info.className = 'question-stats'
-  question_info.innerText= `${questionObj.category}     Difficulty: ${questionObj.difficulty}`
+  question_info.innerHTML= `${questionObj.category}     Difficulty: ${questionObj.difficulty}`
 
   const status = document.createElement('div')
   
   slide.append(question_info, question_content)
-  slide.insertAdjacentHTML('beforeend', answerFormContent())
+  slide.insertAdjacentHTML('beforeend', answerFormContent(answerChoices))
   slide.appendChild(status)
   inner.appendChild(slide)
 
@@ -138,7 +140,7 @@ function renderQuestion(questionObj) {
         pointValue = 5;
     }
     if(clickEl.tagName === 'INPUT'){
-      const userChoice = clickEl.nextElementSibling.innerText
+      const userChoice = clickEl.nextElementSibling.innerHTML
       for(let input of inputs) {
         input.disabled = true
       }
@@ -162,7 +164,7 @@ function renderQuestion(questionObj) {
   }
 }
 
-function answerFormContent() {
+function answerFormContent(answerChoices) {
   return `
     <div id="answer-form"><br>
     <input class="answer-btn" type="radio" name="answer" value=${answerChoices[0]}> <label>${answerChoices[0]}</label><br>
@@ -197,10 +199,13 @@ function renderCorrectAnswers(user) {
 function renderCorrectAnswer(answer) {
   const answerDiv = document.querySelector('.answer-div')
   const answerHead = document.getElementById('answer-head')
-  answerHead.innerText = 'Previous Questions Answered'
+  answerHead.innerText = 'Questions Answered'
+  answerHead.style.color= '#ffd800'
   const answerList = document.createElement('ul')
   const singleAnswer = document.createElement('li')
   singleAnswer.innerHTML = `${answer.question} ${answer.content}`
+  if(answer.correct) { singleAnswer.style.color= 'cyan' }
+  else { singleAnswer.style.color= '#f00030'}
   answerList.appendChild(singleAnswer)
   answerDiv.append(answerList)
 }
@@ -211,7 +216,7 @@ function addQuestions(allQuestions) {
 }
   
 function getQuestions(categoryID) {
-  fetch(`https://opentdb.com/api.php?amount=10&category=${categoryID}&type=multiple`)
+  fetch(`https://opentdb.com/api.php?amount=3&category=${categoryID}&type=multiple`)
   .then(resp => resp.json())
   .then(allQuestions => addQuestions(allQuestions))
   .catch(err => console.log(err.message))
@@ -222,7 +227,7 @@ function welcomeMessage() {
   let carouselMsg = document.getElementById('carousel-msg')
   let welcomeMsg = document.createElement('h3')
   welcomeMsg.setAttribute('id', 'mid-header')
-  welcomeMsg.innerText = 'Welcome! Please Login to Continue'
+  welcomeMsg.innerHTML = 'Welcome! <br>Please Login to Play'
   carouselMsg.append(welcomeMsg)
 }
 
@@ -230,17 +235,18 @@ function readyMessage() {
   let carouselActive = document.querySelector('.active')
   carouselActive.innerHTML = ''
   startMsg = document.createElement('h3')
-  startMsg.innerText = `You have 10 seconds to answer each question
-                        GET READY...GET SET...`
+  startMsg.innerHTML = `<br><br>You have 10 seconds to answer each question
+                        GET READY...<br>GET SET...<br>GO!!!`
   carouselActive.append(startMsg)
 }
+
+
 
 function finishMessage() {
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
-  slide.innerHTML = `<h3>Congratulations!!!</h3><br>
-                    <button id= "submit-score">Submit Your Score</button>`
+  slide.innerHTML = `<h3>Congratulations, You Have Reached The Finish Line!!!</h3> <br> <button id= "submit-score"> Submit Your Score </button>`
   inner.appendChild(slide)
 
   slide.addEventListener('click', () => {
@@ -291,6 +297,7 @@ function startGame() {
   categoryBar.innerHTML = categoryBarContent()
 
   categoryBar.addEventListener('click', () => {
+    let carouselActive = document.querySelector('.active')
     if (event.target.className === 'category-btn') {
       let categoryId = event.target.dataset.id
       categorySlide.innerHTML = ''
