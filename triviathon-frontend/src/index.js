@@ -24,19 +24,15 @@ function loginHandler() {
 }
 
 function loginUser(user) {
-  fetchUser(user)
-  hideForm()
-  clearWelcome()
-  startGame()
-}
-
-function fetchUser(user) {
   const configObj = postUser(user)
   fetch(USERS_URL, configObj)
   .then(resp => resp.json())
   .then(user =>  {renderUserInfo(user)
                   renderCorrectAnswers(user)
     })
+  hideForm()
+  clearWelcome()
+  startGame()
 }
 
 function postUser(user) {
@@ -54,7 +50,7 @@ function postUser(user) {
 }
 
 function grabUserData(e) {
-  return { username: e.target.children[1].value } 
+  return {username: e.target.children[1].value} 
 }
 
 function renderUserInfo(user) {
@@ -80,6 +76,7 @@ function renderUsers(users) {
   users.sort(function(a,b) {
     return b.score - a.score
   })
+
   const topUsers = users.slice(0, 10) 
   topUsers.forEach(user => listUser(user))
 }
@@ -125,63 +122,22 @@ function renderQuestion(questionObj) {
   inner.appendChild(slide)
 
   
-  slide.addEventListener('click',() => handleSelection(slide, status, questionObj))
+  slide.addEventListener('click',() => handelSelection(questionObj))
   
-  // function handelSelection(questionObj){
-  //   const score = document.querySelector('#round-score')
-  //   const clickEl = event.target
-  //   const inputs = slide.getElementsByClassName('answer-btn')
-  //   let pointValue
-  //   switch(questionObj.difficulty) {
-  //     case "easy":
-  //       pointValue = 1;
-  //       break;
-  //     case "medium":
-  //       pointValue = 3;
-  //       break;
-  //     case "hard":
-  //       pointValue = 5;
-  //   }
-  //   if(clickEl.tagName === 'INPUT'){
-  //     const userChoice = clickEl.nextElementSibling.innerText
-  //     for(let input of inputs) {
-  //       input.disabled = true
-  //     }
-  //     if(userChoice === questionObj.correct_answer){
-  //      status.innerHTML = '<br><h4 class= "correct">CORRECT!</h4>'
-  //      score.innerText = parseInt(score.innerText) + pointValue
-  //      createAnswer(question= questionObj.question, correct= true, content= userChoice)
-  //         }else{
-  //       status.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
-  //       createAnswer(question= questionObj.question, correct= false, content= userChoice)
-  //     }
-  //   }
-
-  // }
-
-}
-
-function handleSelection(slide, status, questionObj) {
-  const score = document.querySelector('#round-score')
-  const clickEl = event.target
-  const inputs = slide.getElementsByClassName('answer-btn')
-  let pointValue
-
-  switch(questionObj.difficulty) {
-    case "easy":
-      pointValue = 1;
-      break;
-    case "medium":
-      pointValue = 3;
-      break;
-    case "hard":
-      pointValue = 5;
-  }
-
-  if(clickEl.tagName === 'INPUT') {
-    const userChoice = clickEl.nextElementSibling.innerText
-    for(let input of inputs) {
-      input.disabled = true
+  function handelSelection(questionObj){
+    const score = document.querySelector('#round-score')
+    const clickEl = event.target
+    const inputs = slide.getElementsByClassName('answer-btn')
+    let pointValue
+    switch(questionObj.difficulty) {
+      case "easy":
+        pointValue = 1;
+        break;
+      case "medium":
+        pointValue = 3;
+        break;
+      case "hard":
+        pointValue = 5;
     }
     if(clickEl.tagName === 'INPUT'){
       const userChoice = clickEl.nextElementSibling.innerHTML
@@ -199,6 +155,13 @@ function handleSelection(slide, status, questionObj) {
     }
   }
 
+  function createAnswer(question, correct, content) {
+    const configObj = postAnswer(question, correct, content)
+    fetch(ANSWERS_URL, configObj)
+    .then(resp => resp.json())
+    .then(answer => renderCorrectAnswer(answer))
+    .catch(err => console.log(err.message))
+  }
 }
 
 function answerFormContent(answerChoices) {
@@ -277,30 +240,24 @@ function readyMessage() {
   carouselActive.append(startMsg)
 }
 
-
-
 function finishMessage() {
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
   slide.innerHTML = `<h3>Congratulations, You Have Reached The Finish Line!!!</h3> <br> <button id= "submit-score"> Submit Your Score </button>`
   inner.appendChild(slide)
+  handleSubmitScore(slide)
+}
 
-  slide.addEventListener('click', () => {
-    const span = document.querySelector('span')
-    const userId = span.dataset.id
+function handleSubmitScore(slide) {
+  slide.addEventListener('click', (event) => {
     if (event.target.id === 'submit-score') {
+      const span = document.querySelector('span')
+      const userId = span.dataset.id
       updateScore(userId)
       startGame()
     }
   })
-}
-
-function updateScore(userId) {
-  reqObj = patchScore()
-  fetch(`${USERS_URL}/${userId}`, reqObj)
-  .then(resp => resp.json())
-  .then(user => renderUserInfo(user))
 }
 
 function patchScore() {
@@ -317,6 +274,13 @@ function patchScore() {
   }
 }
 
+function updateScore(userId) {
+  reqObj = patchScore()
+  fetch(`${USERS_URL}/${userId}`, reqObj)
+  .then(resp => resp.json())
+  .then(user => renderUserInfo(user))
+}
+
 // restart game functions
 function clearWelcome() {
   let carouselMsg = document.getElementById('carousel-msg')
@@ -328,13 +292,19 @@ function startGame() {
   carouselActive.innerHTML = ''
   const categorySlide = document.createElement('div')
   categorySlide.id = 'first-slide'
-
   const categoryBar = document.createElement('div')
   categoryBar.className="navbar"
   categoryBar.innerHTML = categoryBarContent()
+  categoryBarHandler(categoryBar, categorySlide)
+  const gameStart = document.createElement('h2')
+  gameStart.className='game-inst'
+  gameStart.innerText = 'Choose a category to start'
+  categorySlide.append(categoryBar, gameStart)
+  carouselActive.appendChild(categorySlide)
+}
 
-  categoryBar.addEventListener('click', () => {
-    let carouselActive = document.querySelector('.active')
+function categoryBarHandler(categoryBar, categorySlide) {
+  categoryBar.addEventListener('click', (event) => {
     if (event.target.className === 'category-btn') {
       let categoryId = event.target.dataset.id
       categorySlide.innerHTML = ''
@@ -342,13 +312,6 @@ function startGame() {
       getQuestions(categoryId)
     }
   })
-
-  const gameStart = document.createElement('h2')
-  gameStart.className='game-inst'
-  gameStart.innerText = 'Choose a category to start'
-
-  categorySlide.append(categoryBar, gameStart)
-  carouselActive.appendChild(categorySlide)
 }
 
 function categoryBarContent() {
