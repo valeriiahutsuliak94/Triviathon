@@ -186,6 +186,10 @@ function renderQuestion(questionObj) {
 
 }
 
+function renderCorrectAnswers(user) {
+  user.answers.forEach(answer => renderCorrectAnswer(answer))
+}
+
 function renderCorrectAnswer(answer) {
   const answerDiv = document.querySelector('.answer-div')
   const answerHead = document.getElementById('answer-head')
