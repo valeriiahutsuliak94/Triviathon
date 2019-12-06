@@ -4,83 +4,82 @@ const form = document.getElementById('login-form')
 
 // main function
 function main() {
-  document.addEventListener('DOMContentLoaded', function(){ 
+  document.addEventListener('DOMContentLoaded', () => { 
     // render all users & scores in left sidebar
     renderCarousel()
     welcomeMessage()
     getAllUsers()
-    
-    form.addEventListener('submit', (e) => {
-      e.preventDefault()
-      let user = grabUserData(e)
-      e.target.reset()
-      loginUser(user)
-    })
+    loginHandler()
   })
 }
 
 // user login functions
-function loginUser(user) {
-    const name = user.username
-    const configObj = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-          'Accept': 'application/json'
-      },
-      body: JSON.stringify({
-        username: name
-      })
-    }
+function loginHandler() {
+  form.addEventListener('submit', (e) => {
+    e.preventDefault()
+    let user = grabUserData(e)
+    e.target.reset()
+    loginUser(user)
+  })
+}
 
-    fetch(USERS_URL, configObj)
-    .then(resp => resp.json())
-    .then(user =>  {renderUserInfo(user)})
-    hideForm()
-    clearWelcome()
-    startGame()
+function loginUser(user) {
+  const configObj = postUser(user)
+  fetch(USERS_URL, configObj)
+  .then(resp => resp.json())
+  .then(user =>  {renderUserInfo(user)
+                  renderCorrectAnswers(user)
+    })
+  hideForm()
+  clearWelcome()
+  startGame()
+}
+
+function postUser(user) {
+  const name = user.username
+  return {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({
+      username: name
+    })
+  }
 }
 
 function grabUserData(e) {
-    return {username: e.target.children[1].value} 
+  return {username: e.target.children[1].value} 
 }
 
 function renderUserInfo(user) {
-    const infosec = document.querySelector('.user-info')
-    infosec.innerHTML = `<span data-id= ${user.id}>
+  const infosec = document.querySelector('.user-info')
+  infosec.innerHTML = `<span data-id= ${user.id}>
                         <p>Name: ${user.username}</p>
                         <label>Total Score:<p id="current-score">${user.score}</p></label><br>
                         <label>Total Attempts:<p>${user.answers.length}</p></label>
-                        <br>
-                        <button id="exit-bttn"> Log Out </button>`
-    let exitForm = document.getElementById('exit-bttn')
-    exitForm.addEventListener('click', () => logOut());
-                      
+                        </span>
+                        `
   }
 
-
-  function logOut(){
-    return window.location.reload();//welcomeMessage()
-  }
-  
 // user ranking functions
 function getAllUsers() {
   fetch(USERS_URL)
   .then(resp => resp.json())
   .then(users => renderUsers(users))
-
 }
 
 function renderUsers(users) {
   const userList = document.querySelector('ul')
   userList.innerHTML = " "
-  users.sort(function(a,b){
+  users.sort(function(a,b) {
     return b.score - a.score
   })
+
   const topUsers = users.slice(0, 10) 
   topUsers.forEach(user => listUser(user))
 }
-
 
 function listUser(user) {
   const userList = document.querySelector('ul')
@@ -94,13 +93,13 @@ function hideForm() {
   loginForm.style.visibility = "hidden"
 }
 
-
+// q&a functions
 function renderQuestion(questionObj) {
-  console.log('-------------')
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
   const answerChoices = [...questionObj.incorrect_answers];
+  console.log(answerChoices)
   questionObj.answerIndex = Math.floor(Math.random() * 3);
   answerChoices.splice(
         questionObj.answerIndex,
@@ -113,20 +112,12 @@ function renderQuestion(questionObj) {
 
   const question_info = document.createElement('p')
   question_info.className = 'question-stats'
-  question_info.innerText= `${questionObj.category}     Difficulty: ${questionObj.difficulty}`
+  question_info.innerHTML= `${questionObj.category}     Difficulty: ${questionObj.difficulty}`
 
   const status = document.createElement('div')
   
   slide.append(question_info, question_content)
-  slide.insertAdjacentHTML('beforeend',
-    `<div id="answer-form">
-    <br>
-    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[0]}> <label>${answerChoices[0]}</label><br>
-    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[1]}> <label>${answerChoices[1]}</label><br>
-    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[2]}> <label>${answerChoices[2]}</label><br>
-    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[3]}> <label>${answerChoices[3]}</label><br>
-    </div>`
-  )
+  slide.insertAdjacentHTML('beforeend', answerFormContent(answerChoices))
   slide.appendChild(status)
   inner.appendChild(slide)
 
@@ -149,7 +140,7 @@ function renderQuestion(questionObj) {
         pointValue = 5;
     }
     if(clickEl.tagName === 'INPUT'){
-      const userChoice = clickEl.nextElementSibling.innerText
+      const userChoice = clickEl.nextElementSibling.innerHTML
       for(let input of inputs) {
         input.disabled = true
       }
@@ -160,36 +151,45 @@ function renderQuestion(questionObj) {
           }else{
         status.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
         createAnswer(question= questionObj.question, correct= false, content= userChoice)
-        
- 
       }
     }
   }
 
   function createAnswer(question, correct, content) {
-    const span = document.querySelector('span')
-    const userId = span.dataset.id
-    const configObj = {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({
-        question: question,
-        correct: correct,
-        user_id: userId,
-        content: content
-      })
-
-    }
-    
+    const configObj = postAnswer(question, correct, content)
     fetch(ANSWERS_URL, configObj)
     .then(resp => resp.json())
     .then(answer => renderCorrectAnswer(answer))
     .catch(err => console.log(err.message))
   }
+}
 
+function answerFormContent(answerChoices) {
+  return `
+    <div id="answer-form"><br>
+    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[0]}> <label>${answerChoices[0]}</label><br>
+    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[1]}> <label>${answerChoices[1]}</label><br>
+    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[2]}> <label>${answerChoices[2]}</label><br>
+    <input class="answer-btn" type="radio" name="answer" value=${answerChoices[3]}> <label>${answerChoices[3]}</label><br>
+    </div>`
+}
+
+function postAnswer(question, correct, content) {
+  const span = document.querySelector('span')
+  const userId = span.dataset.id
+  return {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    body: JSON.stringify({
+      question: question,
+      correct: correct,
+      user_id: userId,
+      content: content
+    })
+  }
 }
 
 function renderCorrectAnswers(user) {
@@ -199,27 +199,24 @@ function renderCorrectAnswers(user) {
 function renderCorrectAnswer(answer) {
   const answerDiv = document.querySelector('.answer-div')
   const answerHead = document.getElementById('answer-head')
-  answerHead.innerText = 'Previous Questions Answered'
+  answerHead.innerText = 'Questions Answered'
+  answerHead.style.color= '#ffd800'
   const answerList = document.createElement('ul')
   const singleAnswer = document.createElement('li')
   singleAnswer.innerHTML = `${answer.question} ${answer.content}`
-  if(answer.correct) { singleAnswer.style.color= 'rgb(7, 224, 7)' }
-  else { singleAnswer.style.color= 'crimson'}
+  if(answer.correct) { singleAnswer.style.color= 'cyan' }
+  else { singleAnswer.style.color= '#f00030'}
   answerList.appendChild(singleAnswer)
   answerDiv.append(answerList)
 }
-  
-
 
 function addQuestions(allQuestions) {
-
   allQuestions.results.forEach(questionObj => renderQuestion(questionObj))
   finishMessage()
 }
   
-
 function getQuestions(categoryID) {
-  fetch(`https://opentdb.com/api.php?amount=10&category=${categoryID}&type=multiple`)
+  fetch(`https://opentdb.com/api.php?amount=3&category=${categoryID}&type=multiple`)
   .then(resp => resp.json())
   .then(allQuestions => addQuestions(allQuestions))
   .catch(err => console.log(err.message))
@@ -230,7 +227,7 @@ function welcomeMessage() {
   let carouselMsg = document.getElementById('carousel-msg')
   let welcomeMsg = document.createElement('h3')
   welcomeMsg.setAttribute('id', 'mid-header')
-  welcomeMsg.innerText = 'Welcome! Please Login to Continue'
+  welcomeMsg.innerHTML = 'Welcome! <br>Please Login to Play'
   carouselMsg.append(welcomeMsg)
 }
 
@@ -238,10 +235,12 @@ function readyMessage() {
   let carouselActive = document.querySelector('.active')
   carouselActive.innerHTML = ''
   startMsg = document.createElement('h3')
-  startMsg.innerText = `You have 10 seconds to answer each question
-                        GET READY...GET SET...`
+  startMsg.innerHTML = `<br><br>You have 10 seconds to answer each question
+                        GET READY...<br>GET SET...<br>GO!!!`
   carouselActive.append(startMsg)
 }
+
+
 
 function finishMessage() {
   const inner = document.querySelector('#question-slides')
@@ -251,38 +250,37 @@ function finishMessage() {
   inner.appendChild(slide)
 
   slide.addEventListener('click', () => {
-    const score = document.querySelector('#round-score')
-    const currentScore = document.getElementById('current-score')
-    const newScore = parseInt(score.innerText) + parseInt(currentScore.innerText)
     const span = document.querySelector('span')
     const userId = span.dataset.id
-
-    reqObj = {
-      method: 'PATCH',
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({score: newScore})
-    }
-
     if (event.target.id === 'submit-score') {
       updateScore(userId)
-      // clearCarousel()
-      // renderCarousel()
       startGame()
     }
-    
   })
 }
 
+function patchScore() {
+  const score = document.querySelector('#round-score')
+  const currentScore = document.getElementById('current-score')
+  const newScore = parseInt(score.innerText) + parseInt(currentScore.innerText)
+  return {
+    method: 'PATCH',
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    body: JSON.stringify({score: newScore})
+  }
+}
+
 function updateScore(userId) {
+  reqObj = patchScore()
   fetch(`${USERS_URL}/${userId}`, reqObj)
   .then(resp => resp.json())
   .then(user => renderUserInfo(user))
-
 }
 
+// restart game functions
 function clearWelcome() {
   let carouselMsg = document.getElementById('carousel-msg')
   carouselMsg.removeChild(carouselMsg.lastElementChild)
@@ -296,16 +294,10 @@ function startGame() {
 
   const categoryBar = document.createElement('div')
   categoryBar.className="navbar"
-  categoryBar.innerHTML = `
-    <button class="category-btn" data-id= 9>General</button>
-    <button class="category-btn" data-id= 10>Books</button>
-    <button class="category-btn" data-id= 11>Movies</button>
-    <button class="category-btn" data-id= 22>Geography</button>
-    <button class="category-btn" data-id= 23>History</button>
-    <button class="category-btn" data-id= 13>Theatre</button>
+  categoryBar.innerHTML = categoryBarContent()
 
-  `
   categoryBar.addEventListener('click', () => {
+    let carouselActive = document.querySelector('.active')
     if (event.target.className === 'category-btn') {
       let categoryId = event.target.dataset.id
       categorySlide.innerHTML = ''
@@ -322,29 +314,39 @@ function startGame() {
   carouselActive.appendChild(categorySlide)
 }
 
+function categoryBarContent() {
+  return `
+  <button class="category-btn" data-id= 9>General</button>
+  <button class="category-btn" data-id= 10>Books</button>
+  <button class="category-btn" data-id= 11>Movies</button>
+  <button class="category-btn" data-id= 22>Geography</button>
+  <button class="category-btn" data-id= 23>History</button>
+  <button class="category-btn" data-id= 13>Theatre</button>`
+}
+
 function renderCarousel() {
   const middleColumn = document.querySelector('#game')
-  middleColumn.innerHTML =`
-  <div id="questions-carousel" class="carousel-slide" data-ride="carousel" data-wrap="false" data-pause="false" data-interval="10000">
-  <div class="carousel-inner">
+  middleColumn.innerHTML = middleColumnContent()
+}
+
+function middleColumnContent() {
+  return `
+    <div id="questions-carousel" class="carousel-slide" data-ride="carousel" data-wrap="false" data-pause="false" data-interval="10000">
+    <div class="carousel-inner">
     <div id="carousel-msg" class="carousel-item active" data-interval="200">
     </div>
     <div id="question-slides"></div>
-  </div>
-  <div id="carousel-footer">
-  <h2>Round Score:</h2>
-  <h2 id="round-score">0</h2>
-  </div>
-  </div>
-`
+    </div>
+    <div id="carousel-footer">
+    <h2>Round Score:</h2>
+    <h2 id="round-score">0</h2>
+    </div>
+    </div>`
 }
 
 function clearCarousel() {
-  // console.log('clearCaro')
-  // debugger;
   const middleColumn = document.querySelector('#game')
   middleColumn.innerHTML = ''
 }
-
 
 main()

@@ -6,12 +6,11 @@ header {
     padding: 30px;
     text-align: center;
     font-style: italic;
-    font-family: fantasy;
     color: #ffd800;
 }
 
 .card {
-    padding: 10px;
+    padding: 5px;
     margin-left: 5%;
     height: 500px;
     align-items: center;
@@ -25,11 +24,12 @@ header {
 .carousel-inner {
     width: 100%;
     height: 460px;
-    padding: 20px
+    padding: 5px
 }
 .carousel-item {
     width: 100%;
     text-align: center;
+    margin-top: 15px
 }
 
 #carousel-footer {
@@ -38,7 +38,7 @@ header {
 }
 
 .correct {
-    color: green
+    color: cyan
 }
 
 .wrong {
@@ -46,13 +46,12 @@ header {
 }
 
 .navbar {
-    height: 70px;
-    background-color: #004445;
-    padding: 10px
-}
+    height: 80px;
+    width: 100%;
+    /* background-color: #004445; */
+    padding: 10px;
+    vertical-align: middle
 
-.category-btn {
-    padding: 5px;
 }
 
 .game-inst {
@@ -66,3 +65,18 @@ header {
     margin-top: 10px
 }
 
+#mid-header {
+    margin-top: 15%
+}
+
+button.category-btn {
+    background-color: #004445;
+    color: ghostwhite;
+    padding: 10px;
+    height: 70px;
+    width: 110px
+}
+
+.col {
+    padding: 0px
+}
