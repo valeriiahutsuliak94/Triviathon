@@ -153,14 +153,14 @@ function renderQuestion(questionObj) {
       }
     }
   }
+}
 
-  function createAnswer(question, correct, content) {
-    const configObj = postAnswer(question, correct, content)
-    fetch(ANSWERS_URL, configObj)
-    .then(resp => resp.json())
-    .then(answer => renderCorrectAnswer(answer))
-    .catch(err => console.log(err.message))
-  }
+function createAnswer(question, correct, content) {
+  const configObj = postAnswer(question, correct, content)
+  fetch(ANSWERS_URL, configObj)
+  .then(resp => resp.json())
+  .then(answer => renderCorrectAnswer(answer))
+  .catch(err => console.log(err.message))
 }
 
 function answerFormContent(answerChoices) {
