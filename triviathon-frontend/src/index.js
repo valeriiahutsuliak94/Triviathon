@@ -24,15 +24,19 @@ function loginHandler() {
 }
 
 function loginUser(user) {
+  fetchUser(user)
+  hideForm()
+  clearWelcome()
+  startGame()
+}
+
+function fetchUser(user) {
   const configObj = postUser(user)
   fetch(USERS_URL, configObj)
   .then(resp => resp.json())
   .then(user =>  {renderUserInfo(user)
                   renderCorrectAnswers(user)
     })
-  hideForm()
-  clearWelcome()
-  startGame()
 }
 
 function postUser(user) {
@@ -50,7 +54,7 @@ function postUser(user) {
 }
 
 function grabUserData(e) {
-  return {username: e.target.children[1].value} 
+  return { username: e.target.children[1].value } 
 }
 
 function renderUserInfo(user) {
@@ -74,7 +78,6 @@ function renderUsers(users) {
   users.sort(function(a,b) {
     return b.score - a.score
   })
-
   const topUsers = users.slice(0, 10) 
   topUsers.forEach(user => listUser(user))
 }
@@ -93,7 +96,6 @@ function hideForm() {
 
 // q&a functions
 function renderQuestion(questionObj) {
-  console.log('-------------')
   const inner = document.querySelector('#question-slides')
   const slide = document.createElement('div')
   slide.className = 'carousel-item'
@@ -115,54 +117,91 @@ function renderQuestion(questionObj) {
   const status = document.createElement('div')
   
   slide.append(question_info, question_content)
-  slide.insertAdjacentHTML('beforeend', answerFormContent())
+  slide.insertAdjacentHTML('beforeend', answerFormContent(answerChoices))
   slide.appendChild(status)
   inner.appendChild(slide)
 
   
-  slide.addEventListener('click',() => handelSelection(questionObj))
+  slide.addEventListener('click',() => handleSelection(slide, status, questionObj))
   
-  function handelSelection(questionObj){
-    const score = document.querySelector('#round-score')
-    const clickEl = event.target
-    const inputs = slide.getElementsByClassName('answer-btn')
-    let pointValue
-    switch(questionObj.difficulty) {
-      case "easy":
-        pointValue = 1;
-        break;
-      case "medium":
-        pointValue = 3;
-        break;
-      case "hard":
-        pointValue = 5;
-    }
-    if(clickEl.tagName === 'INPUT'){
-      const userChoice = clickEl.nextElementSibling.innerText
-      for(let input of inputs) {
-        input.disabled = true
-      }
-      if(userChoice === questionObj.correct_answer){
-       status.innerHTML = '<br><h4 class= "correct">CORRECT!</h4>'
-       score.innerText = parseInt(score.innerText) + pointValue
-       createAnswer(question= questionObj.question, correct= true, content= userChoice)
-          }else{
-        status.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
-        createAnswer(question= questionObj.question, correct= false, content= userChoice)
-      }
-    }
-  }
+  // function handelSelection(questionObj){
+  //   const score = document.querySelector('#round-score')
+  //   const clickEl = event.target
+  //   const inputs = slide.getElementsByClassName('answer-btn')
+  //   let pointValue
+  //   switch(questionObj.difficulty) {
+  //     case "easy":
+  //       pointValue = 1;
+  //       break;
+  //     case "medium":
+  //       pointValue = 3;
+  //       break;
+  //     case "hard":
+  //       pointValue = 5;
+  //   }
+  //   if(clickEl.tagName === 'INPUT'){
+  //     const userChoice = clickEl.nextElementSibling.innerText
+  //     for(let input of inputs) {
+  //       input.disabled = true
+  //     }
+  //     if(userChoice === questionObj.correct_answer){
+  //      status.innerHTML = '<br><h4 class= "correct">CORRECT!</h4>'
+  //      score.innerText = parseInt(score.innerText) + pointValue
+  //      createAnswer(question= questionObj.question, correct= true, content= userChoice)
+  //         }else{
+  //       status.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
+  //       createAnswer(question= questionObj.question, correct= false, content= userChoice)
+  //     }
+  //   }
 
-  function createAnswer(question, correct, content) {
-    const configObj = postAnswer(question, correct, content)
-    fetch(ANSWERS_URL, configObj)
-    .then(resp => resp.json())
-    .then(answer => renderCorrectAnswer(answer))
-    .catch(err => console.log(err.message))
-  }
+  // }
+
 }
 
-function answerFormContent() {
+function handleSelection(slide, status, questionObj) {
+  const score = document.querySelector('#round-score')
+  const clickEl = event.target
+  const inputs = slide.getElementsByClassName('answer-btn')
+  let pointValue
+
+  switch(questionObj.difficulty) {
+    case "easy":
+      pointValue = 1;
+      break;
+    case "medium":
+      pointValue = 3;
+      break;
+    case "hard":
+      pointValue = 5;
+  }
+
+  if(clickEl.tagName === 'INPUT') {
+    const userChoice = clickEl.nextElementSibling.innerText
+    for(let input of inputs) {
+      input.disabled = true
+    }
+
+    if(userChoice === questionObj.correct_answer) {
+     status.innerHTML = '<br><h4 class= "correct">CORRECT!</h4>'
+     score.innerText = parseInt(score.innerText) + pointValue
+     createAnswer(question= questionObj.question, correct= true, content= userChoice)
+      } else {
+      status.innerHTML = '<br><h4 class= "wrong">WRONG!</h4>'
+      createAnswer(question= questionObj.question, correct= false, content= userChoice)
+    }
+  }
+
+}
+
+function createAnswer(question, correct, content) {
+  const configObj = postAnswer(question, correct, content)
+  fetch(ANSWERS_URL, configObj)
+  .then(resp => resp.json())
+  .then(answer => renderCorrectAnswer(answer))
+  .catch(err => console.log(err.message))
+}
+
+function answerFormContent(answerChoices) {
   return `
     <div id="answer-form"><br>
     <input class="answer-btn" type="radio" name="answer" value=${answerChoices[0]}> <label>${answerChoices[0]}</label><br>
@@ -253,6 +292,13 @@ function finishMessage() {
   })
 }
 
+function updateScore(userId) {
+  reqObj = patchScore()
+  fetch(`${USERS_URL}/${userId}`, reqObj)
+  .then(resp => resp.json())
+  .then(user => renderUserInfo(user))
+}
+
 function patchScore() {
   const score = document.querySelector('#round-score')
   const currentScore = document.getElementById('current-score')
@@ -265,13 +311,6 @@ function patchScore() {
     },
     body: JSON.stringify({score: newScore})
   }
-}
-
-function updateScore(userId) {
-  reqObj = patchScore()
-  fetch(`${USERS_URL}/${userId}`, reqObj)
-  .then(resp => resp.json())
-  .then(user => renderUserInfo(user))
 }
 
 // restart game functions
