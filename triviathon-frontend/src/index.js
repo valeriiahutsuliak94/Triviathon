@@ -28,7 +28,6 @@ function loginUser(user) {
   fetch(USERS_URL, configObj)
   .then(resp => resp.json())
   .then(user =>  {renderUserInfo(user)
-                  renderCorrectAnswers(user)
     })
   hideForm()
   clearWelcome()
@@ -190,10 +189,6 @@ function postAnswer(question, correct, content) {
       content: content
     })
   }
-}
-
-function renderCorrectAnswers(user) {
-  user.answers.forEach(answer => renderCorrectAnswer(answer))
 }
 
 function renderCorrectAnswer(answer) {
